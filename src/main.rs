@@ -75,7 +75,7 @@ fn game()
 	
 	let mut game = Object::new();
 	game.is_game = true;
-	world.add_object(game);
+	world.state.add_object(game);
 
 	timer.start();
 	'exit: loop

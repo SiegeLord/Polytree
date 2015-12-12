@@ -1,5 +1,3 @@
-use world::DT;
-
 simple_behavior!
 {
 	Movement[obj.can_want_move && obj.has_vel] |_id, obj, _state|

@@ -59,6 +59,11 @@ impl<T> IdMap<T>
 	{
 		&mut self.elems
 	}
+	
+	pub fn next_id(&self) -> usize
+	{
+		self.next_id
+	}
 }
 
 #[test]

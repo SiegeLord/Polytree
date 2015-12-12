@@ -22,6 +22,7 @@ pub struct Object
 
 	pub is_game: bool,
 	pub started: bool,
+	pub player_id: usize,
 	
 	pub can_want_move: bool,
 	pub want_move_left: bool,
@@ -50,6 +51,7 @@ impl Object
 
 			is_game: false,
 			started: false,
+			player_id: 0,
 			
 			can_want_move: false,
 			want_move_left: false,
@@ -102,7 +104,9 @@ pub struct WorldState
 	pub core: Core,
 	pub prim: PrimitivesAddon,
 	
-	new_objects: Vec<Object>,
+	new_objects: Vec<(usize, Object)>,
+	// This follows the object's ids.
+	next_id: usize,
 	ids_to_remove: HashSet<usize>,
 	
 	pub key_down: Option<KeyCode>,
@@ -114,9 +118,12 @@ pub struct WorldState
 
 impl WorldState
 {
-	pub fn add_object(&mut self, obj: Object)
+	pub fn add_object(&mut self, obj: Object) -> usize
 	{
-		self.new_objects.push(obj);
+		let id = self.next_id;
+		self.new_objects.push((id, obj));
+		self.next_id += 1;
+		id
 	}
 	
 	pub fn remove_object(&mut self, id: usize)
@@ -151,17 +158,13 @@ impl World
 				time: 0.0,
 				new_objects: vec![],
 				ids_to_remove: HashSet::new(),
+				next_id: 1,
 			},
 			objects: IdMap::new(),
 			logic_behaviors: vec![],
 			input_behaviors: vec![],
 			draw_behaviors: vec![],
 		}
-	}
-	
-	pub fn add_object(&mut self, obj: Object)
-	{
-		self.objects.insert(obj);
 	}
 	
 	pub fn add_logic_behavior(&mut self, behavior: Box<Behavior<Object, WorldState>>)
@@ -176,14 +179,19 @@ impl World
 			behavior.handle_objects(&mut self.objects, &mut self.state);
 		}
 		
-		for obj in self.state.new_objects.drain(..)
+		for (expected_id, obj) in self.state.new_objects.drain(..)
 		{
-			self.objects.insert(obj);
+			let actual_id = self.objects.insert(obj);	
+			assert_eq!(actual_id, expected_id);
 		}
+		self.state.next_id = self.objects.next_id();
 		
 		for id in self.state.ids_to_remove.drain()
 		{
-			self.objects.remove(id);
+			if self.objects.get(id).is_some()
+			{
+				self.objects.remove(id);
+			}
 		}
 	}
 	
