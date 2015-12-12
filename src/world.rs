@@ -2,9 +2,12 @@ use id_map::IdMap;
 
 use allegro::*;
 use allegro_primitives::*;
+use allegro_font::*;
+use allegro_ttf::*;
 use std::collections::HashSet;
 
 pub static DT: f32 = 1.0 / 60.0;
+pub static WIDTH: f32 = 1000.0;
 
 pub struct Object
 {
@@ -25,6 +28,7 @@ pub struct Object
 	pub is_game: bool,
 	pub started: bool,
 	pub player_id: usize,
+	pub start_time: f32,
 	
 	pub can_want_move: bool,
 	pub want_move_left: bool,
@@ -39,6 +43,7 @@ pub struct Object
 	pub branch_dir_y: f32,
 	pub branch_start_time: f32,
 	pub branch_max_dur: f32,
+	pub branch_spawns: i32,
 	
 	pub affected_by_gravity: bool,
 	pub is_solid: bool,
@@ -67,6 +72,7 @@ impl Object
 			is_game: false,
 			started: false,
 			player_id: 0,
+			start_time: 0.0,
 			
 			can_want_move: false,
 			want_move_left: false,
@@ -81,6 +87,7 @@ impl Object
 			branch_dir_y: 0.0,
 			branch_start_time: 0.0,
 			branch_max_dur: 0.0,
+			branch_spawns: 0,
 			
 			affected_by_gravity: false,
 			is_solid: false,
@@ -129,6 +136,8 @@ pub struct WorldState
 {
 	pub core: Core,
 	pub prim: PrimitivesAddon,
+	pub disp: Display,
+	pub ttf: TtfAddon,
 	
 	new_objects: Vec<(usize, Object)>,
 	// This follows the object's ids.
@@ -140,6 +149,7 @@ pub struct WorldState
 	pub quit: bool,
 	pub paused: bool,
 	pub time: f32,
+	pub ui_font: Font,
 }
 
 impl WorldState
@@ -169,14 +179,19 @@ pub struct World
 
 impl World
 {
-	pub fn new(core: Core, prim: PrimitivesAddon) -> World
+	pub fn new(core: Core, prim: PrimitivesAddon, disp: Display, ttf: TtfAddon) -> World
 	{
+		let path = "data/Energon.ttf";
+		let ui_font = ttf.load_ttf_font(path, 128, TtfFlags::zero()).expect(&format!("Couldn't load {}", path));
 		World
 		{
 			state: WorldState
 			{
 				core: core,
 				prim: prim,
+				disp: disp,
+				ttf: ttf,
+				ui_font: ui_font,
 				key_down: None,
 				key_up: None,
 				quit: false,

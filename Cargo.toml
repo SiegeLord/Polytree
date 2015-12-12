@@ -25,6 +25,14 @@ path = "../RustAllegro/allegro_dialog"
 version = "*"
 path = "../RustAllegro/allegro_primitives"
 
+[dependencies.allegro_font]
+version = "*"
+path = "../RustAllegro/allegro_font"
+
+[dependencies.allegro_ttf]
+version = "*"
+path = "../RustAllegro/allegro_ttf"
+
 #[dependencies.allegro_primitives]
 #version = "=0.0.18"
 ##features = ["link_none"]

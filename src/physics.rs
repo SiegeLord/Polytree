@@ -1,36 +1,11 @@
 use branch::get_branch_end;
-use world::DT;
+use world::{DT, WIDTH};
 
 simple_behavior!
 {
 	Gravity[obj.affected_by_gravity] |_id, obj, _state|
 	{
-		obj.vy += 8.0 * DT;
-	}
-}
-
-pub fn segment_intersect(s1: (f32, f32, f32, f32), s2: (f32, f32, f32, f32)) -> Option<(f32, f32)>
-{
-	let ((x1, y1, x2, y2), (x3, y3, x4, y4)) = (s1, s2);
-	let d = (y4 - y3) * (x2 - x2) - (x4 - x3) * (y2 - y1);
-	let n1 = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3);
-	let n2 = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3);
-	if d == 0.0
-	{
-		None
-	}
-	else
-	{
-		let u1 = n1 / d;
-		let u2 = n2 / d;
-		if u1 >= 0.0 && u1 <= 1.0 && u2 >= 0.0 && u2 <= 1.0
-		{
-			Some((u1, u2))
-		}
-		else
-		{
-			None
-		}
+		obj.vy += 32.0 * DT;
 	}
 }
 
@@ -79,7 +54,7 @@ impl Physics
 		
 impl ::world::Behavior<::world::Object, ::world::WorldState> for Physics
 {
-	fn check_object(&self, obj: &::world::Object) -> bool
+	fn check_object(&self, _: &::world::Object) -> bool
 	{
 		true
 	}
@@ -108,8 +83,7 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for Physics
 				let mut best_ny = obj.y + obj.vy * DT;
 				if obj.is_solid && (obj.vx != 0.0 || obj.vy != 0.0)
 				{
-					let mut collided = false;
-					
+					let mut collided;
 					for &branch in &self.branches
 					{
 						if segment_distance(branch, obj.x, obj.y) < 4.0
@@ -134,10 +108,27 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for Physics
 					}
 					
 				}
+
 				obj.vx = best_vx;
 				obj.vy = best_vy;
 				obj.x = best_nx;
 				obj.y = best_ny;
+				
+				if obj.x < -WIDTH / 2.0
+				{
+					obj.x = -WIDTH / 2.0;
+					obj.vx = -obj.vx / 2.0;
+				}
+				if obj.x > WIDTH / 2.0
+				{
+					obj.x = WIDTH / 2.0;
+					obj.vx = -obj.vx / 2.0;
+				}
+				if obj.y > 0.0
+				{
+					obj.y = 0.0;
+					obj.vy = 0.0;
+				}
 			}
 		}
 	}

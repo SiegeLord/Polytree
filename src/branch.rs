@@ -5,15 +5,18 @@ use rand::{self, Rng};
 pub fn new_branch(sx: f32, sy: f32, dx: f32, dy: f32, t: f32) -> Object
 {
 	let mut rng = rand::thread_rng();
-	let mut branch = Object::new();
-	branch.is_branch = true;
-	branch.branch_start_x = sx;
-	branch.branch_start_y = sy;
-	branch.branch_dir_x = dx;
-	branch.branch_dir_y = dy;
-	branch.branch_start_time = t;
-	branch.branch_max_dur = rng.gen_range(1.0, 5.0);
-	branch
+	Object
+	{
+		is_branch: true,
+		branch_start_x: sx,
+		branch_start_y: sy,
+		branch_dir_x: dx,
+		branch_dir_y: dy,
+		branch_start_time: t,
+		branch_spawns: 1,
+		branch_max_dur: rng.gen_range(1.0, 5.0),
+		..Object::new()
+	}
 }
 
 pub fn get_branch_end(obj: &Object, cur_time: f32) -> (f32, f32)
@@ -41,7 +44,7 @@ simple_behavior!
 	BranchLogic[obj.is_branch] |_id, obj, state|
 	{
 		let mut rng = rand::thread_rng();
-		if rng.gen::<f32>() < 0.25 * DT
+		if rng.gen::<f32>() < 0.65 * DT && obj.branch_spawns > 0 && get_branch_dur(&obj, state.time) > 0.5
 		{
 			let dt = get_branch_dur(&obj, state.time) * rng.gen_range(0.25, 0.75);
 			let spawn_x = dt * obj.branch_dir_x + obj.branch_start_x;
@@ -49,7 +52,10 @@ simple_behavior!
 			
 			let time = state.time;
 			state.add_object(new_branch(spawn_x, spawn_y, -obj.branch_dir_x, obj.branch_dir_y, time));
+			obj.branch_spawns -= 1;
+			info!("Spawns left: {}", obj.branch_spawns);
 		}
+		obj.branch_start_y += 16.0 * DT;
 	}
 }
 

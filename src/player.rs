@@ -13,8 +13,8 @@ pub fn new_player() -> Object
 		affected_by_gravity: true,
 		is_solid: true,
 		debug_draw: true,
-		x: 400.0,
-		y: 400.0,
+		x: 0.0,
+		y: -50.0,
 		..Object::new()
 	}
 }

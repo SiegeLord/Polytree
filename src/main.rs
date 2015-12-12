@@ -5,6 +5,8 @@
 extern crate allegro;
 extern crate allegro_dialog;
 extern crate allegro_primitives;
+extern crate allegro_font;
+extern crate allegro_ttf;
 extern crate fern;
 #[macro_use]
 extern crate log;
@@ -32,6 +34,8 @@ use branch::*;
 use allegro::*;
 use allegro_dialog::*;
 use allegro_primitives::*;
+use allegro_font::*;
+use allegro_ttf::*;
 
 fn game()
 {
@@ -55,9 +59,14 @@ fn game()
 	//~ let _image = ImageAddon::init(&core).unwrap();
 	//~ let audio = AudioAddon::init(&core).unwrap();
 	//~ let _acodec = AcodecAddon::init(&audio).unwrap();
-	//~ let font = FontAddon::init(&core).unwrap();
+	let font = FontAddon::init(&core).unwrap();
+	let ttf = TtfAddon::init(&font).unwrap();
 	core.set_new_display_flags(RESIZABLE);
+	core.set_new_display_option(DisplayOption::SampleBuffers, 1, DisplayOptionImportance::Suggest);
+	core.set_new_display_option(DisplayOption::Samples, 8, DisplayOptionImportance::Suggest);
 	let disp = Display::new(&core, 1280, 960).unwrap();
+	
+	core.set_new_bitmap_flags(MAG_LINEAR | MIN_LINEAR);
 
 	let timer = Timer::new(&core, DT as f64).unwrap();
 	let mut q = EventQueue::new(&core).unwrap();
@@ -65,7 +74,7 @@ fn game()
 	q.register_event_source(core.get_keyboard_event_source());
 	q.register_event_source(timer.get_event_source());
 
-	let mut world = World::new(core, prim);
+	let mut world = World::new(core, prim, disp, ttf);
 	
 	world.add_logic_behavior(Box::new(Physics::new()));
 	world.add_logic_behavior(Box::new(GameLogic));
@@ -78,6 +87,7 @@ fn game()
 	
 	world.add_draw_behavior(Box::new(DebugDraw));
 	world.add_draw_behavior(Box::new(BranchDraw));
+	world.add_draw_behavior(Box::new(GameDraw));
 	
 	let mut game = Object::new();
 	game.is_game = true;
@@ -99,7 +109,7 @@ fn game()
 				},
 				DisplayResize{..} =>
 				{
-					disp.acknowledge_resize().ok();
+					world.state.disp.acknowledge_resize().ok();
 				},
 				KeyDown{keycode: k, ..} =>
 				{
