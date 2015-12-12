@@ -17,6 +17,8 @@ pub struct Object
 	pub has_vel: bool,
 	pub vx: f32,
 	pub vy: f32,
+	pub ax: f32,
+	pub ay: f32,
 	
 	pub debug_draw: bool,
 
@@ -37,6 +39,9 @@ pub struct Object
 	pub branch_dir_y: f32,
 	pub branch_start_time: f32,
 	pub branch_max_dur: f32,
+	
+	pub affected_by_gravity: bool,
+	pub is_solid: bool,
 }
 
 impl Object
@@ -54,6 +59,8 @@ impl Object
 			has_vel: false,
 			vx: 0.0,
 			vy: 0.0,
+			ax: 0.0,
+			ay: 0.0,
 			
 			debug_draw: false,
 
@@ -74,6 +81,9 @@ impl Object
 			branch_dir_y: 0.0,
 			branch_start_time: 0.0,
 			branch_max_dur: 0.0,
+			
+			affected_by_gravity: false,
+			is_solid: false,
 		}
 	}
 }

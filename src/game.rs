@@ -28,6 +28,7 @@ simple_behavior!
 			obj.player_id = state.add_object(new_player());
 			let time = state.time;
 			state.add_object(new_branch(400.0, 800.0, 64.0, -64.0, time));
+			state.add_object(new_branch(500.0, 700.0, -64.0, -64.0, time));
 			obj.started = true;
 		}
 	}

@@ -67,10 +67,11 @@ fn game()
 
 	let mut world = World::new(core, prim);
 	
-	world.add_logic_behavior(Box::new(Physics));
+	world.add_logic_behavior(Box::new(Physics::new()));
 	world.add_logic_behavior(Box::new(GameLogic));
 	world.add_logic_behavior(Box::new(Movement));
 	world.add_logic_behavior(Box::new(BranchLogic));
+	world.add_logic_behavior(Box::new(Gravity));
 	
 	world.add_input_behavior(Box::new(GameInput));
 	world.add_input_behavior(Box::new(PlayerInput));

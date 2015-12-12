@@ -16,9 +16,16 @@ pub fn new_branch(sx: f32, sy: f32, dx: f32, dy: f32, t: f32) -> Object
 	branch
 }
 
-fn get_branch_dur(obj: &Object, time: f32) -> f32
+pub fn get_branch_end(obj: &Object, cur_time: f32) -> (f32, f32)
 {
-	let dt = time - obj.branch_start_time;
+	let dt = get_branch_dur(obj, cur_time);
+	(dt * obj.branch_dir_x + obj.branch_start_x,
+	 dt * obj.branch_dir_y + obj.branch_start_y)
+}
+
+pub fn get_branch_dur(obj: &Object, cur_time: f32) -> f32
+{
+	let dt = cur_time - obj.branch_start_time;
 	if dt > obj.branch_max_dur
 	{
 		obj.branch_max_dur
@@ -54,7 +61,7 @@ simple_behavior!
 		let end_x = dt * obj.branch_dir_x + obj.branch_start_x;
 		let end_y = dt * obj.branch_dir_y + obj.branch_start_y;
 		
-		let alpha = 1.0 - dt / obj.branch_max_dur;
+		let alpha = 1.0 - 0.5 * dt / obj.branch_max_dur;
 		let c = state.core.map_rgba_f(0.5 * alpha, 1.0 * alpha, 0.8 * alpha, alpha);
 		
 		state.prim.draw_line(obj.branch_start_x, obj.branch_start_y, end_x, end_y, c, 10.0);

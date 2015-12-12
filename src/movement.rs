@@ -2,16 +2,15 @@ simple_behavior!
 {
 	Movement[obj.can_want_move && obj.has_vel] |_id, obj, _state|
 	{
-		let vel = 128.0;
-		obj.vx = 0.0;
-		obj.vy = 0.0;
+		let a = 32.0;
+		obj.ax = 0.0;
 		if obj.want_move_left
 		{
-			obj.vx -= vel;
+			obj.ax -= a;
 		}
 		if obj.want_move_right
 		{
-			obj.vx += vel;
+			obj.ax += a;
 		}
 	}
 }

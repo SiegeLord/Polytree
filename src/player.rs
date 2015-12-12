@@ -4,15 +4,19 @@ use allegro::*;
 
 pub fn new_player() -> Object
 {
-	let mut player = Object::new();
-	player.has_pos = true;
-	player.has_vel = true;
-	player.is_player = true;
-	player.can_want_move = true;
-	player.debug_draw = true;
-	player.x = 100.0;
-	player.y = 100.0;
-	player
+	Object
+	{
+		has_pos: true,
+		has_vel: true,
+		is_player: true,
+		can_want_move: true,
+		affected_by_gravity: true,
+		is_solid: true,
+		debug_draw: true,
+		x: 400.0,
+		y: 400.0,
+		..Object::new()
+	}
 }
 
 simple_behavior!
