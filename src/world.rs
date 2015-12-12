@@ -29,6 +29,14 @@ pub struct Object
 	pub want_move_right: bool,
 
 	pub is_player: bool,
+
+	pub is_branch: bool,
+	pub branch_start_x: f32,
+	pub branch_start_y: f32,
+	pub branch_dir_x: f32,
+	pub branch_dir_y: f32,
+	pub branch_start_time: f32,
+	pub branch_max_dur: f32,
 }
 
 impl Object
@@ -58,6 +66,14 @@ impl Object
 			want_move_right: false,
 			
 			is_player: false,
+			
+			is_branch: false,
+			branch_start_x: 0.0,
+			branch_start_y: 0.0,
+			branch_dir_x: 0.0,
+			branch_dir_y: 0.0,
+			branch_start_time: 0.0,
+			branch_max_dur: 0.0,
 		}
 	}
 }

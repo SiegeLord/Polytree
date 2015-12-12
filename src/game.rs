@@ -1,4 +1,5 @@
 use player::new_player;
+use branch::new_branch;
 
 use allegro::*;
 
@@ -25,6 +26,8 @@ simple_behavior!
 		if !obj.started
 		{
 			obj.player_id = state.add_object(new_player());
+			let time = state.time;
+			state.add_object(new_branch(400.0, 800.0, 64.0, -64.0, time));
 			obj.started = true;
 		}
 	}

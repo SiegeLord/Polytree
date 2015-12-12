@@ -9,6 +9,7 @@ extern crate fern;
 #[macro_use]
 extern crate log;
 extern crate time;
+extern crate rand;
 
 #[macro_use]
 mod world;
@@ -18,6 +19,7 @@ mod physics;
 mod game;
 mod player;
 mod movement;
+mod branch;
 
 use debug_draw::*;
 use physics::*;
@@ -25,6 +27,7 @@ use world::*;
 use game::*;
 use movement::*;
 use player::*;
+use branch::*;
 
 use allegro::*;
 use allegro_dialog::*;
@@ -67,11 +70,13 @@ fn game()
 	world.add_logic_behavior(Box::new(Physics));
 	world.add_logic_behavior(Box::new(GameLogic));
 	world.add_logic_behavior(Box::new(Movement));
+	world.add_logic_behavior(Box::new(BranchLogic));
 	
 	world.add_input_behavior(Box::new(GameInput));
 	world.add_input_behavior(Box::new(PlayerInput));
 	
 	world.add_draw_behavior(Box::new(DebugDraw));
+	world.add_draw_behavior(Box::new(BranchDraw));
 	
 	let mut game = Object::new();
 	game.is_game = true;
