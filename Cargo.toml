@@ -20,6 +20,10 @@ path = "../RustAllegro/allegro"
 version = "*"
 path = "../RustAllegro/allegro_dialog"
 
+[dependencies.allegro_primitives]
+version = "*"
+path = "../RustAllegro/allegro_primitives"
+
 #[dependencies.allegro_primitives]
 #version = "=0.0.18"
 ##features = ["link_none"]

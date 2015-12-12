@@ -1,20 +1,34 @@
 #![feature(catch_panic)]
+#![feature(drain)]
 
 #[macro_use]
 extern crate allegro;
+extern crate allegro_dialog;
+extern crate allegro_primitives;
 extern crate fern;
 #[macro_use]
 extern crate log;
 extern crate time;
-extern crate allegro_dialog;
 
-mod id_map;
+#[macro_use]
 mod world;
+mod id_map;
+mod debug_draw;
+mod physics;
+mod game;
+mod player;
+mod movement;
+
+use debug_draw::*;
+use physics::*;
+use world::*;
+use game::*;
+use movement::*;
+use player::*;
 
 use allegro::*;
 use allegro_dialog::*;
-
-static DT: f32 = 1.0 / 60.0;
+use allegro_primitives::*;
 
 fn game()
 {
@@ -34,7 +48,7 @@ fn game()
 	let mut core = Core::init().unwrap();
 	core.install_keyboard().unwrap();
 	
-	//~ let prim = PrimitivesAddon::init(&core).unwrap();
+	let prim = PrimitivesAddon::init(&core).unwrap();
 	//~ let _image = ImageAddon::init(&core).unwrap();
 	//~ let audio = AudioAddon::init(&core).unwrap();
 	//~ let _acodec = AcodecAddon::init(&audio).unwrap();
@@ -48,15 +62,28 @@ fn game()
 	q.register_event_source(core.get_keyboard_event_source());
 	q.register_event_source(timer.get_event_source());
 
+	let mut world = World::new(core, prim);
+	
+	world.add_logic_behavior(Box::new(Physics));
+	world.add_logic_behavior(Box::new(GameLogic));
+	world.add_logic_behavior(Box::new(Movement));
+	
+	world.add_input_behavior(Box::new(GameInput));
+	world.add_input_behavior(Box::new(PlayerInput));
+	
+	world.add_draw_behavior(Box::new(DebugDraw));
+	
+	let mut game = Object::new();
+	game.is_game = true;
+	world.add_object(game);
 
 	timer.start();
 	'exit: loop
 	{
 		for event in &mut q
 		{
-			//~ world.state.key_down = None;
-			//~ world.state.key_up = None;
-			//~ world.state.key_char = None;
+			world.state.key_down = None;
+			world.state.key_up = None;
 			
 			match event
 			{
@@ -68,39 +95,35 @@ fn game()
 				{
 					disp.acknowledge_resize().ok();
 				},
-				//~ KeyDown{keycode: k, ..} =>
-				//~ {
-					//~ world.state.key_down = Some(k);
-					//~ world.input();
-				//~ },
-				//~ KeyChar{unichar: c, ..} =>
-				//~ {
-					//~ world.state.key_char = Some(c);
-					//~ world.input();
-				//~ },
-				//~ KeyUp{keycode: k, ..} =>
-				//~ {
-					//~ world.state.key_up = Some(k);
-					//~ world.input();
-				//~ },
+				KeyDown{keycode: k, ..} =>
+				{
+					world.state.key_down = Some(k);
+					world.input();
+				},
+				KeyUp{keycode: k, ..} =>
+				{
+					world.state.key_up = Some(k);
+					world.input();
+				},
 				TimerTick{..} =>
 				{
-					//~ if !world.state.paused
-					//~ {
-						//~ world.state.time += DT;
-						//~ world.logic();
-					//~ }
-					//~ if world.state.quit
-					//~ {
-						//~ break 'exit;
-					//~ }
+					if !world.state.paused
+					{
+						world.state.time += DT;
+						world.logic();
+					}
+					if world.state.quit
+					{
+						break 'exit;
+					}
 				},
 				_ => ()
 			}
 		}
 
-		core.clear_to_color(core.map_rgb(0, 0, 0));
-		core.flip_display();
+		world.state.core.clear_to_color(world.state.core.map_rgb(0, 0, 0));
+		world.draw();
+		world.state.core.flip_display();
 	}
 
 	info!("All's well that ends well.");
