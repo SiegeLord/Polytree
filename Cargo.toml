@@ -1,0 +1,36 @@
+[project]
+name = "polytree"
+version = "0.0.0"
+license = "GPL-3.0"
+
+[[bin]]
+name = "polytree"
+path = "src/main.rs"
+
+[dependencies.allegro]
+version = "*"
+path = "../RustAllegro/allegro"
+
+#[dependencies.allegro_primitives]
+#version = "=0.0.18"
+##features = ["link_none"]
+#
+#[dependencies.allegro_acodec]
+#version = "=0.0.18"
+##features = ["link_none"]
+#
+#[dependencies.allegro_audio]
+#version = "=0.0.18"
+##features = ["link_none"]
+#
+#[dependencies.allegro_image]
+#version = "=0.0.18"
+##features = ["link_none"]
+#
+#[dependencies.allegro_font]
+#version = "=0.0.18"
+##features = ["link_none"]
+#
+#[dependencies.allegro_dialog]
+#version = "=0.0.18"
+##features = ["link_none"]
