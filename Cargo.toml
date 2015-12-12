@@ -3,6 +3,11 @@ name = "polytree"
 version = "0.0.0"
 license = "GPL-3.0"
 
+[dependencies]
+log = "=0.3.1"
+fern = "=0.3.5"
+time = "=0.1.26"
+
 [[bin]]
 name = "polytree"
 path = "src/main.rs"
@@ -10,6 +15,10 @@ path = "src/main.rs"
 [dependencies.allegro]
 version = "*"
 path = "../RustAllegro/allegro"
+
+[dependencies.allegro_dialog]
+version = "*"
+path = "../RustAllegro/allegro_dialog"
 
 #[dependencies.allegro_primitives]
 #version = "=0.0.18"
