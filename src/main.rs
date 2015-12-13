@@ -66,9 +66,11 @@ fn game()
 	let _image = ImageAddon::init(&core).unwrap();
 	let font = FontAddon::init(&core).unwrap();
 	let ttf = TtfAddon::init(&font).unwrap();
-	core.set_new_display_flags(RESIZABLE);
+	//~ core.set_new_display_flags(RESIZABLE);
+	core.set_new_display_flags(FULLSCREEN_WINDOW);
 	core.set_new_display_option(DisplayOption::SampleBuffers, 1, DisplayOptionImportance::Suggest);
 	core.set_new_display_option(DisplayOption::Samples, 8, DisplayOptionImportance::Suggest);
+	core.set_new_display_option(DisplayOption::Vsync, 1, DisplayOptionImportance::Suggest);
 	let disp = Display::new(&core, 1280, 960).unwrap();
 	
 	core.set_new_bitmap_flags(MAG_LINEAR | MIN_LINEAR);
@@ -81,6 +83,7 @@ fn game()
 
 	let mut world = World::new(core, prim, disp, ttf);
 	
+	world.add_logic_behavior(Box::new(OldPos));
 	world.add_logic_behavior(Box::new(Physics::new()));
 	world.add_logic_behavior(Box::new(GameLogic));
 	world.add_logic_behavior(Box::new(Movement));
@@ -100,6 +103,7 @@ fn game()
 	start_stage(1, &mut world.state);
 
 	timer.start();
+	let offset = world.state.core.get_time() as f32;
 	'exit: loop
 	{
 		for event in &mut q
@@ -143,6 +147,8 @@ fn game()
 			}
 		}
 
+		let cur_time = world.state.core.get_time() as f32;
+		world.state.draw_interp = ((cur_time - offset - world.state.time) / DT) as f32;
 		world.state.core.clear_to_color(world.state.core.map_rgb(0, 0, 0));
 		world.draw();
 		world.state.core.flip_display();

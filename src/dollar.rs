@@ -13,6 +13,8 @@ pub fn new_dollar(parent: usize, color: Color, x: f32, y: f32, vx: f32, vy: f32,
 		has_pos: true,
 		x: x,
 		y: y,
+		old_x: x,
+		old_y: y,
 		has_vel: true,
 		vx: vx,
 		vy: vy,
@@ -110,7 +112,9 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for SpriteDraw
 				let bh = sprite.get_height() as f32;
 				let sw = obj.size;
 				let sh = bh * sw / bw;
-				state.core.draw_tinted_scaled_bitmap(&**sprite, obj.color, 0.0, 0.0, bw, bh, obj.x - sw, obj.y - sh, 2.0 * sw, 2.0 * sh, BitmapDrawingFlags::zero());
+				let x = obj.old_x + state.draw_interp * (obj.x - obj.old_x);
+				let y = obj.old_y + state.draw_interp * (obj.y - obj.old_y);
+				state.core.draw_tinted_scaled_bitmap(&**sprite, obj.color, 0.0, 0.0, bw, bh, x - sw, y - sh, 2.0 * sw, 2.0 * sh, BitmapDrawingFlags::zero());
 			}
 		}
 		state.core.hold_bitmap_drawing(false);

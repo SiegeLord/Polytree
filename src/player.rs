@@ -17,6 +17,8 @@ pub fn new_player(parent: usize, state: &WorldState) -> Object
 		//~ debug_draw: true,
 		x: 0.0,
 		y: -50.0,
+		old_x: 0.0,
+		old_y: -50.0,
 		size: 15.0,
 		parent: parent,
 		sprite: Some(state.player.clone()),

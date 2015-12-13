@@ -26,6 +26,8 @@ pub struct Object
 	pub has_pos: bool,
 	pub x: f32,
 	pub y: f32,
+	pub old_x: f32,
+	pub old_y: f32,
 	
 	pub has_vel: bool,
 	pub vx: f32,
@@ -79,6 +81,8 @@ impl Object
 			has_pos: false,
 			x: 0.0,
 			y: 0.0,
+			old_x: 0.0,
+			old_y: 0.0,
 			
 			has_vel: false,
 			vx: 0.0,
@@ -177,6 +181,7 @@ pub struct WorldState
 	pub quit: bool,
 	pub paused: bool,
 	pub time: f32,
+	pub draw_interp: f32,
 	pub ui_font: Font,
 	pub dollar: Rc<Bitmap>,
 	pub boss: Rc<Bitmap>,
@@ -234,6 +239,7 @@ impl World
 				quit: false,
 				paused: false,
 				time: 0.0,
+				draw_interp: 0.0,
 				new_objects: vec![],
 				ids_to_remove: HashSet::new(),
 				next_id: 1,
