@@ -1,5 +1,5 @@
 use branch::get_branch_end;
-use world::{DT, WIDTH};
+use world::{DT, WIDTH, MAX_SPEED};
 
 simple_behavior!
 {
@@ -128,6 +128,12 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for Physics
 				{
 					obj.y = 0.0;
 					obj.vy = 0.0;
+				}
+				let speed = (obj.vx * obj.vx + obj.vy * obj.vy).sqrt();
+				if speed > MAX_SPEED
+				{
+					obj.vx *= MAX_SPEED / speed;
+					obj.vy *= MAX_SPEED / speed;
 				}
 			}
 		}

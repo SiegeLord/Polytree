@@ -53,9 +53,8 @@ simple_behavior!
 			let time = state.time;
 			state.add_object(new_branch(spawn_x, spawn_y, -obj.branch_dir_x, obj.branch_dir_y, time));
 			obj.branch_spawns -= 1;
-			info!("Spawns left: {}", obj.branch_spawns);
 		}
-		obj.branch_start_y += 16.0 * DT;
+		obj.branch_start_y += 24.0 * DT;
 	}
 }
 

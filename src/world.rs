@@ -7,7 +7,10 @@ use allegro_ttf::*;
 use std::collections::HashSet;
 
 pub static DT: f32 = 1.0 / 60.0;
-pub static WIDTH: f32 = 1000.0;
+pub static WIDTH: f32 = 2000.0;
+pub static MAX_SPEED: f32 = 256.0;
+pub static DEATH: f32 = 700.0;
+pub static DURATION: f32 = 20.0;
 
 pub struct Object
 {
@@ -26,9 +29,9 @@ pub struct Object
 	pub debug_draw: bool,
 
 	pub is_game: bool,
-	pub started: bool,
 	pub player_id: usize,
 	pub start_time: f32,
+	pub stage: i32,
 	
 	pub can_want_move: bool,
 	pub want_move_left: bool,
@@ -70,9 +73,9 @@ impl Object
 			debug_draw: false,
 
 			is_game: false,
-			started: false,
 			player_id: 0,
 			start_time: 0.0,
+			stage: 0,
 			
 			can_want_move: false,
 			want_move_left: false,

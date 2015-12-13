@@ -89,9 +89,7 @@ fn game()
 	world.add_draw_behavior(Box::new(BranchDraw));
 	world.add_draw_behavior(Box::new(GameDraw));
 	
-	let mut game = Object::new();
-	game.is_game = true;
-	world.state.add_object(game);
+	start_stage(1, &mut world.state);
 
 	timer.start();
 	'exit: loop
