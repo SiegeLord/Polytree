@@ -1,8 +1,9 @@
 use world::{DT, Object};
 
+use allegro::*;
 use rand::{self, Rng};
 
-pub fn new_branch(sx: f32, sy: f32, dx: f32, dy: f32, t: f32) -> Object
+pub fn new_branch(parent: usize, color: Color, sx: f32, sy: f32, dx: f32, dy: f32, t: f32) -> Object
 {
 	let mut rng = rand::thread_rng();
 	Object
@@ -15,6 +16,8 @@ pub fn new_branch(sx: f32, sy: f32, dx: f32, dy: f32, t: f32) -> Object
 		branch_start_time: t,
 		branch_spawns: 1,
 		branch_max_dur: rng.gen_range(1.0, 5.0),
+		color: color,
+		parent: parent,
 		..Object::new()
 	}
 }
@@ -51,7 +54,7 @@ simple_behavior!
 			let spawn_y = dt * obj.branch_dir_y + obj.branch_start_y;
 			
 			let time = state.time;
-			state.add_object(new_branch(spawn_x, spawn_y, -obj.branch_dir_x, obj.branch_dir_y, time));
+			state.add_object(new_branch(obj.parent, obj.color, spawn_x, spawn_y, -obj.branch_dir_x, obj.branch_dir_y, time));
 			obj.branch_spawns -= 1;
 		}
 		obj.branch_start_y += 24.0 * DT;
@@ -67,7 +70,8 @@ simple_behavior!
 		let end_y = dt * obj.branch_dir_y + obj.branch_start_y;
 		
 		let alpha = 1.0 - 0.5 * dt / obj.branch_max_dur;
-		let c = state.core.map_rgba_f(0.5 * alpha, 1.0 * alpha, 0.8 * alpha, alpha);
+		let (r, g, b) = obj.color.unmap_rgb_f();
+		let c = state.core.map_rgba_f(r * alpha, g * alpha, b * alpha, alpha);
 		
 		state.prim.draw_line(obj.branch_start_x, obj.branch_start_y, end_x, end_y, c, 10.0);
 	}

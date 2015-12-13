@@ -45,6 +45,15 @@ impl<T> IdMap<T>
 		self.id_to_idx.get(&id).map(|&idx| &self.elems[idx].1)
 	}
 
+	pub fn get_mut(&mut self, id: usize) -> Option<&mut T>
+	{
+		match self.id_to_idx.get(&id)
+		{
+			Some(&idx) => Some(&mut self.elems[idx].1),
+			None => None
+		}
+	}
+
 	pub fn len(&self) -> usize
 	{
 		self.elems.len()

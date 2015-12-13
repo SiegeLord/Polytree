@@ -2,7 +2,7 @@ use world::Object;
 
 use allegro::*;
 
-pub fn new_player() -> Object
+pub fn new_player(parent: usize) -> Object
 {
 	Object
 	{
@@ -15,6 +15,8 @@ pub fn new_player() -> Object
 		debug_draw: true,
 		x: 0.0,
 		y: -50.0,
+		size: 10.0,
+		parent: parent,
 		..Object::new()
 	}
 }

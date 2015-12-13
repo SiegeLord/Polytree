@@ -17,6 +17,10 @@ path = "src/main.rs"
 version = "*"
 path = "../RustAllegro/allegro"
 
+[dependencies.allegro-sys]
+version = "*"
+path = "../RustAllegro/allegro-sys"
+
 [dependencies.allegro_dialog]
 version = "*"
 path = "../RustAllegro/allegro_dialog"
@@ -33,26 +37,6 @@ path = "../RustAllegro/allegro_font"
 version = "*"
 path = "../RustAllegro/allegro_ttf"
 
-#[dependencies.allegro_primitives]
-#version = "=0.0.18"
-##features = ["link_none"]
-#
-#[dependencies.allegro_acodec]
-#version = "=0.0.18"
-##features = ["link_none"]
-#
-#[dependencies.allegro_audio]
-#version = "=0.0.18"
-##features = ["link_none"]
-#
-#[dependencies.allegro_image]
-#version = "=0.0.18"
-##features = ["link_none"]
-#
-#[dependencies.allegro_font]
-#version = "=0.0.18"
-##features = ["link_none"]
-#
-#[dependencies.allegro_dialog]
-#version = "=0.0.18"
-##features = ["link_none"]
+[dependencies.allegro_image]
+version = "*"
+path = "../RustAllegro/allegro_image"

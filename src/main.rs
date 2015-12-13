@@ -3,10 +3,12 @@
 
 #[macro_use]
 extern crate allegro;
+extern crate allegro_sys;
 extern crate allegro_dialog;
 extern crate allegro_primitives;
 extern crate allegro_font;
 extern crate allegro_ttf;
+extern crate allegro_image;
 extern crate fern;
 #[macro_use]
 extern crate log;
@@ -22,6 +24,8 @@ mod game;
 mod player;
 mod movement;
 mod branch;
+mod dollar;
+mod boss;
 
 use debug_draw::*;
 use physics::*;
@@ -30,12 +34,15 @@ use game::*;
 use movement::*;
 use player::*;
 use branch::*;
+use dollar::*;
+use boss::*;
 
 use allegro::*;
 use allegro_dialog::*;
 use allegro_primitives::*;
 use allegro_font::*;
 use allegro_ttf::*;
+use allegro_image::*;
 
 fn game()
 {
@@ -56,7 +63,7 @@ fn game()
 	core.install_keyboard().unwrap();
 	
 	let prim = PrimitivesAddon::init(&core).unwrap();
-	//~ let _image = ImageAddon::init(&core).unwrap();
+	let _image = ImageAddon::init(&core).unwrap();
 	//~ let audio = AudioAddon::init(&core).unwrap();
 	//~ let _acodec = AcodecAddon::init(&audio).unwrap();
 	let font = FontAddon::init(&core).unwrap();
@@ -81,12 +88,15 @@ fn game()
 	world.add_logic_behavior(Box::new(Movement));
 	world.add_logic_behavior(Box::new(BranchLogic));
 	world.add_logic_behavior(Box::new(Gravity));
+	world.add_logic_behavior(Box::new(DollarLogic));
+	world.add_logic_behavior(Box::new(BossLogic));
 	
 	world.add_input_behavior(Box::new(GameInput));
 	world.add_input_behavior(Box::new(PlayerInput));
 	
 	world.add_draw_behavior(Box::new(DebugDraw));
 	world.add_draw_behavior(Box::new(BranchDraw));
+	world.add_draw_behavior(Box::new(SpriteDraw));
 	world.add_draw_behavior(Box::new(GameDraw));
 	
 	start_stage(1, &mut world.state);

@@ -1,20 +1,27 @@
 use id_map::IdMap;
 
 use allegro::*;
+use allegro_sys::*;
 use allegro_primitives::*;
 use allegro_font::*;
 use allegro_ttf::*;
 use std::collections::HashSet;
+use std::rc::Rc;
 
-pub static DT: f32 = 1.0 / 60.0;
-pub static WIDTH: f32 = 2000.0;
-pub static MAX_SPEED: f32 = 256.0;
-pub static DEATH: f32 = 700.0;
-pub static DURATION: f32 = 20.0;
+use rand::{self, Rng};
+
+pub const DT: f32 = 1.0 / 60.0;
+pub const WIDTH: f32 = 2000.0;
+pub const MAX_SPEED: f32 = 256.0;
+pub const DEATH: f32 = 700.0;
+pub const DURATION: f32 = 30.0;
+pub const BOSS_RX: f32 = WIDTH / 3.0;
+pub const BOSS_RY: f32 = DEATH / 4.0;
+pub const BOSS_RATE: f32 = 10.0;
 
 pub struct Object
 {
-	pub remove_me: bool,
+	pub parent: usize,
 	
 	pub has_pos: bool,
 	pub x: f32,
@@ -50,6 +57,15 @@ pub struct Object
 	
 	pub affected_by_gravity: bool,
 	pub is_solid: bool,
+	pub size: f32,
+	
+	pub is_dollar: bool,
+	pub dollar_spawn_color: Color,
+	
+	pub is_boss: bool,
+	
+	pub sprite: Option<Rc<Bitmap>>,
+	pub color: Color,
 }
 
 impl Object
@@ -58,7 +74,7 @@ impl Object
 	{
 		Object
 		{
-			remove_me: false,
+			parent: 0,
 			
 			has_pos: false,
 			x: 0.0,
@@ -94,6 +110,15 @@ impl Object
 			
 			affected_by_gravity: false,
 			is_solid: false,
+			size: 10.0,
+
+			is_dollar: false,
+			dollar_spawn_color: Color(ALLEGRO_COLOR{r: 0.0, g: 0.0, b: 0.0, a: 0.0}),
+			
+			is_boss: false,
+			
+			sprite: None,
+			color: Color(ALLEGRO_COLOR{r: 0.0, g: 0.0, b: 0.0, a: 0.0}),
 		}
 	}
 }
@@ -153,6 +178,8 @@ pub struct WorldState
 	pub paused: bool,
 	pub time: f32,
 	pub ui_font: Font,
+	pub dollar: Rc<Bitmap>,
+	pub boss: Rc<Bitmap>,
 }
 
 impl WorldState
@@ -184,8 +211,12 @@ impl World
 {
 	pub fn new(core: Core, prim: PrimitivesAddon, disp: Display, ttf: TtfAddon) -> World
 	{
-		let path = "data/Energon.ttf";
-		let ui_font = ttf.load_ttf_font(path, 128, TtfFlags::zero()).expect(&format!("Couldn't load {}", path));
+		let font_path = "data/Energon.ttf";
+		let dollar_path = "data/dollar.png";
+		let boss_path = "data/boss.png";
+		let ui_font = ttf.load_ttf_font(font_path, 128, TtfFlags::zero()).expect(&format!("Couldn't load {}", font_path));
+		let dollar = Bitmap::load(&core, dollar_path).expect(&format!("Couldn't load {}", dollar_path));
+		let boss = Bitmap::load(&core, boss_path).expect(&format!("Couldn't load {}", boss_path));
 		World
 		{
 			state: WorldState
@@ -203,6 +234,8 @@ impl World
 				new_objects: vec![],
 				ids_to_remove: HashSet::new(),
 				next_id: 1,
+				dollar: Rc::new(dollar),
+				boss: Rc::new(boss),
 			},
 			objects: IdMap::new(),
 			logic_behaviors: vec![],
@@ -229,6 +262,27 @@ impl World
 			assert_eq!(actual_id, expected_id);
 		}
 		self.state.next_id = self.objects.next_id();
+		
+		let mut old_ids_to_remove = vec![];
+		old_ids_to_remove.extend(&self.state.ids_to_remove);
+		let mut new_ids_to_remove = vec![];
+		while !old_ids_to_remove.is_empty()
+		{
+			new_ids_to_remove.clear();
+			for &(id, ref obj) in self.objects.elems()
+			{
+				for &dead_id in &old_ids_to_remove
+				{
+					if obj.parent == dead_id
+					{
+						new_ids_to_remove.push(id);
+					}
+				}
+			}
+			old_ids_to_remove.clear();
+			old_ids_to_remove.extend(&new_ids_to_remove);
+			self.state.ids_to_remove.extend(&new_ids_to_remove);
+		}
 		
 		for id in self.state.ids_to_remove.drain()
 		{
@@ -264,4 +318,35 @@ impl World
 			behavior.handle_objects(&mut self.objects, &mut self.state);
 		}
 	}
+}
+
+fn hsv_to_rgb(hue: f32, saturation: f32, value: f32) -> (f32, f32, f32)
+{
+	let mut hue = hue % 360.0;
+	if hue < 0.0
+	{
+		hue += 360.0;
+	}
+	let d = hue / 60.0;
+	let e = hue / 60.0 - d;
+	let a = value * (1.0 - saturation);
+	let b = value * (1.0 - e * saturation);
+	let c = value * (1.0 - (1.0 - e) * saturation);
+	match d as i32
+	{
+		0 => (value, c, a),
+		1 => (b, value, a),
+		2 => (a, value, c),
+		3 => (a, b, value),
+		4 => (c, a, value),
+		5 => (value, a, b),
+		_ => unreachable!()
+	}
+}
+
+pub fn random_color(core: &Core) -> Color
+{
+	let mut rng = rand::thread_rng();
+	let (r, g, b) = hsv_to_rgb(rng.gen_range(0.0, 360.0), 0.5, 1.0);
+	core.map_rgb_f(r, g, b)
 }

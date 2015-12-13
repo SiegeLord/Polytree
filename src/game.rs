@@ -1,27 +1,35 @@
 use player::new_player;
 use branch::new_branch;
-use world::{Object, WorldState, DEATH, WIDTH, DURATION};
+use dollar::new_dollar;
+use boss::new_boss;
+use world::{Object, WorldState, DT, DEATH, WIDTH, DURATION, random_color};
 
 use allegro::*;
 use allegro_font::*;
+use rand::{self, Rng};
 
 pub fn start_stage(stage: i32, state: &mut WorldState)
 {
-	let player_id = state.add_object(new_player());
 	let time = state.time;
-	let mut branch = new_branch(0.0, 0.0, 128.0, -96.0, time);
-	branch.branch_spawns = 2;
-	state.add_object(branch);
+	let player_id = state.add_object(new_player(0 /* Terrible */));
 	info!("Starting stage: {}", stage);
+	let dollar_color = random_color(&state.core);
 	let stage = Object
 	{
 		is_game: true,
 		stage: stage,
 		player_id: player_id,
 		start_time: time,
+		dollar_spawn_color: dollar_color,
 		..Object::new()
 	};
-	state.add_object(stage);
+	// This is awkward, I want to be able to set the player's parent, but I don't have access to it until I add the stage... yet I want to let the stage know the player_id
+	let stage_id = state.add_object(stage);
+	let mut branch = new_branch(stage_id, random_color(&state.core), 0.0, 0.0, 128.0, -96.0, time);
+	branch.branch_spawns = 2;
+	let boss = new_boss(stage_id, dollar_color, state);
+	state.add_object(boss);
+	state.add_object(branch);
 }
 
 simple_behavior!
@@ -51,6 +59,7 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for GameLogic
 	
 	fn handle_objects(&mut self, objects: &mut ::id_map::IdMap<::world::Object>, state: &mut ::world::WorldState)
 	{
+		// Can't access other objects in a mutable way... this happens every time, there must be a better way.
 		let mut time_left = 0.0;
 		let mut game_id = 0;
 		let mut player_id = 0;
@@ -70,6 +79,24 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for GameLogic
 				trans.scale(scale, scale);
 				trans.translate(state.disp.get_width() as f32 / 2.0, state.disp.get_height() as f32);
 				state.core.use_transform(&trans);
+				
+				let mut rng = rand::thread_rng();
+				if rng.gen::<f32>() < 0.65 * DT
+				{
+					let x = *rng.choose(&[-WIDTH - 10.0, WIDTH + 10.0]).unwrap();
+					let y = rng.gen_range(-1500.0, -500.0);
+					let vx = rng.gen_range(-32.0, 32.0) + if x < 0.0
+					{
+						-256.0
+					}
+					else
+					{
+						256.0
+					};
+					let vy = rng.gen_range(-32.0, 0.0);
+					let dollar = new_dollar(game_id, obj.dollar_spawn_color, x, y, vx, vy, state);
+					state.add_object(dollar);
+				}
 				break;
 			}
 		}
@@ -92,7 +119,9 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for GameLogic
 		
 		if time_left < -2.0
 		{
-			info!("Here");
+			// See above. This is terrible.
+			objects.get_mut(player_id).map(|obj| obj.parent = game_id);
+			
 			state.remove_object(game_id);
 			let advance = objects.get(player_id).map_or(0, |_| 1);
 			start_stage(stage + advance, state);
