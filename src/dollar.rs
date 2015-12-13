@@ -9,7 +9,7 @@ pub fn new_dollar(parent: usize, color: Color, x: f32, y: f32, vx: f32, vy: f32,
 		is_dollar: true,
 		affected_by_gravity: true,
 		is_solid: true,
-		size: 14.0,
+		size: 10.0,
 		has_pos: true,
 		x: x,
 		y: y,
@@ -66,6 +66,11 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for DollarLogic
 					state.remove_object(id);
 					collided = true;
 				}
+				
+				if obj.y >= -obj.size
+				{
+					state.remove_object(id);
+				}
 			}
 		}
 		if collided
@@ -75,9 +80,9 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for DollarLogic
 			player.y += 64.0;
 			player.vx = 0.0;
 			player.vy = 64.0;
-			if player.y > 0.0
+			if player.y > -player.size
 			{
-				player.y = 0.0;
+				player.y = -player.size;
 			}
 		}
 	}
@@ -105,7 +110,7 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for SpriteDraw
 				let bh = sprite.get_height() as f32;
 				let sw = obj.size;
 				let sh = bh * sw / bw;
-				state.core.draw_tinted_scaled_bitmap(&**sprite, obj.color, 0.0, 0.0, bw, bh, obj.x - sw, obj.y - sh, 2.0 * sw, 2.0 * sw, BitmapDrawingFlags::zero());
+				state.core.draw_tinted_scaled_bitmap(&**sprite, obj.color, 0.0, 0.0, bw, bh, obj.x - sw, obj.y - sh, 2.0 * sw, 2.0 * sh, BitmapDrawingFlags::zero());
 			}
 		}
 		state.core.hold_bitmap_drawing(false);

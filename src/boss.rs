@@ -33,7 +33,7 @@ simple_behavior!
 		let mut rng = rand::thread_rng();
 		if rng.gen::<f32>() < 0.2 * DT
 		{
-			let n = 16;
+			let n = 13;
 			for i in 0..n
 			{
 				let theta = 2.0 * PI * (i as f32) / (n as f32);

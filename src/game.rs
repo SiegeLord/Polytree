@@ -11,7 +11,8 @@ use rand::{self, Rng};
 pub fn start_stage(stage: i32, state: &mut WorldState)
 {
 	let time = state.time;
-	let player_id = state.add_object(new_player(0 /* Terrible */));
+	let player = new_player(0 /* Terrible */, state);
+	let player_id = state.add_object(player);
 	info!("Starting stage: {}", stage);
 	let dollar_color = random_color(&state.core);
 	let stage = Object

@@ -1,8 +1,10 @@
 use world::Object;
 
+use world::{WorldState, random_color};
+
 use allegro::*;
 
-pub fn new_player(parent: usize) -> Object
+pub fn new_player(parent: usize, state: &WorldState) -> Object
 {
 	Object
 	{
@@ -12,11 +14,13 @@ pub fn new_player(parent: usize) -> Object
 		can_want_move: true,
 		affected_by_gravity: true,
 		is_solid: true,
-		debug_draw: true,
+		//~ debug_draw: true,
 		x: 0.0,
 		y: -50.0,
-		size: 10.0,
+		size: 15.0,
 		parent: parent,
+		sprite: Some(state.player.clone()),
+		color: random_color(&state.core),
 		..Object::new()
 	}
 }

@@ -180,6 +180,7 @@ pub struct WorldState
 	pub ui_font: Font,
 	pub dollar: Rc<Bitmap>,
 	pub boss: Rc<Bitmap>,
+	pub player: Rc<Bitmap>,
 }
 
 impl WorldState
@@ -214,9 +215,11 @@ impl World
 		let font_path = "data/Energon.ttf";
 		let dollar_path = "data/dollar.png";
 		let boss_path = "data/boss.png";
+		let player_path = "data/player.png";
 		let ui_font = ttf.load_ttf_font(font_path, 128, TtfFlags::zero()).expect(&format!("Couldn't load {}", font_path));
 		let dollar = Bitmap::load(&core, dollar_path).expect(&format!("Couldn't load {}", dollar_path));
 		let boss = Bitmap::load(&core, boss_path).expect(&format!("Couldn't load {}", boss_path));
+		let player = Bitmap::load(&core, player_path).expect(&format!("Couldn't load {}", player_path));
 		World
 		{
 			state: WorldState
@@ -236,6 +239,7 @@ impl World
 				next_id: 1,
 				dollar: Rc::new(dollar),
 				boss: Rc::new(boss),
+				player: Rc::new(player),
 			},
 			objects: IdMap::new(),
 			logic_behaviors: vec![],

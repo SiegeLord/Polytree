@@ -86,7 +86,7 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for Physics
 					let mut collided;
 					for &branch in &self.branches
 					{
-						if segment_distance(branch, obj.x, obj.y) < 4.0
+						if segment_distance(branch, obj.x, obj.y) < obj.size
 						{
 							collided = true;
 							let bdx = branch.2 - branch.0;
@@ -124,9 +124,9 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for Physics
 					obj.x = WIDTH / 2.0;
 					obj.vx = -obj.vx / 2.0;
 				}
-				if obj.y > 0.0
+				if obj.y > -obj.size
 				{
-					obj.y = 0.0;
+					obj.y = -obj.size;
 					obj.vy = 0.0;
 				}
 				let speed = (obj.vx * obj.vx + obj.vy * obj.vy).sqrt();
