@@ -15,7 +15,7 @@ pub fn start_stage(stage: i32, state: &mut WorldState)
 	let player_id = state.add_object(player);
 	info!("Starting stage: {}", stage);
 	let dollar_color = random_color(&state.core);
-	let stage = Object
+	let stage_obj = Object
 	{
 		is_game: true,
 		stage: stage,
@@ -25,12 +25,18 @@ pub fn start_stage(stage: i32, state: &mut WorldState)
 		..Object::new()
 	};
 	// This is awkward, I want to be able to set the player's parent, but I don't have access to it until I add the stage... yet I want to let the stage know the player_id
-	let stage_id = state.add_object(stage);
-	let mut branch = new_branch(stage_id, random_color(&state.core), 0.0, 0.0, 128.0, -96.0, time);
+	let stage_id = state.add_object(stage_obj);
+	let mut branch = new_branch(stage_id, random_color(&state.core), -200.0, 0.0, -256.0, -192.0, time);
 	branch.branch_spawns = 2;
-	let boss = new_boss(stage_id, dollar_color, state);
-	state.add_object(boss);
 	state.add_object(branch);
+	let mut branch = new_branch(stage_id, random_color(&state.core), 200.0, 0.0, 256.0, -192.0, time);
+	branch.branch_spawns = 2;
+	state.add_object(branch);
+	if stage % 3 == 0
+	{
+		let boss = new_boss(stage_id, dollar_color, state);
+		state.add_object(boss);
+	}
 }
 
 simple_behavior!
@@ -82,21 +88,24 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for GameLogic
 				state.core.use_transform(&trans);
 				
 				let mut rng = rand::thread_rng();
-				if rng.gen::<f32>() < 0.65 * DT
+				if rng.gen::<f32>() < 1.5 * DT
 				{
-					let x = *rng.choose(&[-WIDTH - 10.0, WIDTH + 10.0]).unwrap();
-					let y = rng.gen_range(-1500.0, -500.0);
-					let vx = rng.gen_range(-32.0, 32.0) + if x < 0.0
+					for _ in 0..obj.stage
 					{
-						-256.0
+						let x = *rng.choose(&[-WIDTH - 10.0, WIDTH + 10.0]).unwrap();
+						let y = rng.gen_range(-2500.0, -1000.0);
+						let vx = rng.gen_range(-128.0, 128.0) + if x < 0.0
+						{
+							-512.0
+						}
+						else
+						{
+							512.0
+						};
+						let vy = rng.gen_range(-128.0, 128.0);
+						let dollar = new_dollar(game_id, obj.dollar_spawn_color, x, y, vx, vy, state);
+						state.add_object(dollar);
 					}
-					else
-					{
-						256.0
-					};
-					let vy = rng.gen_range(-32.0, 0.0);
-					let dollar = new_dollar(game_id, obj.dollar_spawn_color, x, y, vx, vy, state);
-					state.add_object(dollar);
 				}
 				break;
 			}
@@ -164,14 +173,16 @@ simple_behavior!
 		{
 			time_left
 		};
-		let time_text = format!("{}", time_left.ceil() as i32);
+		let time_text = format!("TIME {}", time_left.ceil() as i32);
 		let stage_text = format!("STAGE {}", obj.stage);
 		
 		let y = state.disp.get_height() as f32 / scale;
 		let x1 = -WIDTH / 2.0 + 50.0;
 		let x2 = WIDTH / 2.0 - 50.0;
 		
-		state.core.draw_text(&state.ui_font, state.core.map_rgba(64, 64, 64, 64), x1, -y + 50.0, FontAlign::Left, &stage_text);
-		state.core.draw_text(&state.ui_font, state.core.map_rgba(64, 64, 64, 64), x2, -y + 50.0, FontAlign::Right, &time_text);
+		let c = state.core.map_rgba(128, 128, 128, 128);
+		state.core.draw_text(&state.ui_font, c, 0.0, -y + 50.0, FontAlign::Centre, "POLYTREE");
+		state.core.draw_text(&state.ui_font, c, x1, -y + 50.0, FontAlign::Left, &stage_text);
+		state.core.draw_text(&state.ui_font, c, x2, -y + 50.0, FontAlign::Right, &time_text);
 	}
 }

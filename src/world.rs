@@ -12,9 +12,9 @@ use rand::{self, Rng};
 
 pub const DT: f32 = 1.0 / 60.0;
 pub const WIDTH: f32 = 2000.0;
-pub const MAX_SPEED: f32 = 256.0;
+pub const MAX_SPEED: f32 = 512.0;
 pub const DEATH: f32 = 700.0;
-pub const DURATION: f32 = 30.0;
+pub const DURATION: f32 = 60.0;
 pub const BOSS_RX: f32 = WIDTH / 3.0;
 pub const BOSS_RY: f32 = DEATH / 4.0;
 pub const BOSS_RATE: f32 = 10.0;
@@ -216,7 +216,7 @@ impl World
 		let dollar_path = "data/dollar.png";
 		let boss_path = "data/boss.png";
 		let player_path = "data/player.png";
-		let ui_font = ttf.load_ttf_font(font_path, 128, TtfFlags::zero()).expect(&format!("Couldn't load {}", font_path));
+		let ui_font = ttf.load_ttf_font(font_path, 64, TtfFlags::zero()).expect(&format!("Couldn't load {}", font_path));
 		let dollar = Bitmap::load(&core, dollar_path).expect(&format!("Couldn't load {}", dollar_path));
 		let boss = Bitmap::load(&core, boss_path).expect(&format!("Couldn't load {}", boss_path));
 		let player = Bitmap::load(&core, player_path).expect(&format!("Couldn't load {}", player_path));
@@ -331,7 +331,7 @@ fn hsv_to_rgb(hue: f32, saturation: f32, value: f32) -> (f32, f32, f32)
 	{
 		hue += 360.0;
 	}
-	let d = hue / 60.0;
+	let d = (hue / 60.0).floor();
 	let e = hue / 60.0 - d;
 	let a = value * (1.0 - saturation);
 	let b = value * (1.0 - e * saturation);
@@ -352,5 +352,6 @@ pub fn random_color(core: &Core) -> Color
 {
 	let mut rng = rand::thread_rng();
 	let (r, g, b) = hsv_to_rgb(rng.gen_range(0.0, 360.0), 0.5, 1.0);
+	info!("Chosen: {} {} {}", r, g, b);
 	core.map_rgb_f(r, g, b)
 }

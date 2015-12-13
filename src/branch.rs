@@ -15,7 +15,7 @@ pub fn new_branch(parent: usize, color: Color, sx: f32, sy: f32, dx: f32, dy: f3
 		branch_dir_y: dy,
 		branch_start_time: t,
 		branch_spawns: 1,
-		branch_max_dur: rng.gen_range(1.0, 5.0),
+		branch_max_dur: rng.gen_range(0.25, 2.1),
 		color: color,
 		parent: parent,
 		..Object::new()
@@ -47,7 +47,7 @@ simple_behavior!
 	BranchLogic[obj.is_branch] |_id, obj, state|
 	{
 		let mut rng = rand::thread_rng();
-		if rng.gen::<f32>() < 0.65 * DT && obj.branch_spawns > 0 && get_branch_dur(&obj, state.time) > 0.5
+		if rng.gen::<f32>() < 0.9 * DT && obj.branch_spawns > 0 && get_branch_dur(&obj, state.time) > 0.2
 		{
 			let dt = get_branch_dur(&obj, state.time) * rng.gen_range(0.25, 0.75);
 			let spawn_x = dt * obj.branch_dir_x + obj.branch_start_x;
@@ -57,7 +57,7 @@ simple_behavior!
 			state.add_object(new_branch(obj.parent, obj.color, spawn_x, spawn_y, -obj.branch_dir_x, obj.branch_dir_y, time));
 			obj.branch_spawns -= 1;
 		}
-		obj.branch_start_y += 24.0 * DT;
+		obj.branch_start_y += 48.0 * DT;
 	}
 }
 

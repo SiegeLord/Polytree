@@ -64,8 +64,6 @@ fn game()
 	
 	let prim = PrimitivesAddon::init(&core).unwrap();
 	let _image = ImageAddon::init(&core).unwrap();
-	//~ let audio = AudioAddon::init(&core).unwrap();
-	//~ let _acodec = AcodecAddon::init(&audio).unwrap();
 	let font = FontAddon::init(&core).unwrap();
 	let ttf = TtfAddon::init(&font).unwrap();
 	core.set_new_display_flags(RESIZABLE);
@@ -75,7 +73,7 @@ fn game()
 	
 	core.set_new_bitmap_flags(MAG_LINEAR | MIN_LINEAR);
 
-	let timer = Timer::new(&core, DT as f64).unwrap();
+	let timer = Timer::new(&core, 1.0 / 60.0).unwrap();
 	let mut q = EventQueue::new(&core).unwrap();
 	q.register_event_source(disp.get_event_source());
 	q.register_event_source(core.get_keyboard_event_source());

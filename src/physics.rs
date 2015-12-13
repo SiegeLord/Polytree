@@ -5,7 +5,7 @@ simple_behavior!
 {
 	Gravity[obj.affected_by_gravity] |_id, obj, _state|
 	{
-		obj.vy += 32.0 * DT;
+		obj.vy += 128.0 * DT;
 	}
 }
 
