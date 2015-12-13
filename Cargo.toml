@@ -14,29 +14,22 @@ name = "polytree"
 path = "src/main.rs"
 
 [dependencies.allegro]
-version = "*"
-path = "../RustAllegro/allegro"
+version = "=0.0.21"
 
 [dependencies.allegro-sys]
-version = "*"
-path = "../RustAllegro/allegro-sys"
+version = "=0.0.21"
 
 [dependencies.allegro_dialog]
-version = "*"
-path = "../RustAllegro/allegro_dialog"
+version = "=0.0.21"
 
 [dependencies.allegro_primitives]
-version = "*"
-path = "../RustAllegro/allegro_primitives"
+version = "=0.0.21"
 
 [dependencies.allegro_font]
-version = "*"
-path = "../RustAllegro/allegro_font"
+version = "=0.0.21"
 
 [dependencies.allegro_ttf]
-version = "*"
-path = "../RustAllegro/allegro_ttf"
+version = "=0.0.21"
 
 [dependencies.allegro_image]
-version = "*"
-path = "../RustAllegro/allegro_image"
+version = "=0.0.21"

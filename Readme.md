@@ -19,6 +19,10 @@ Climb the branches to get away from the bottom of the screen before the time run
 * Left - Move left
 * Right - Move right
 
+# Compilation
+
+You should be able to compile it by getting a nightly Rust, installing Allegro 5.1.x and then running `cargo run`.
+
 # Rules
 
 ## Genre requirements
