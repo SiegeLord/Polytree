@@ -2,6 +2,7 @@
 name = "polytree"
 version = "0.0.0"
 license = "GPL-3.0"
+build = "build.rs"
 
 [dependencies]
 log = "=0.3.1"

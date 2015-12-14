@@ -1,3 +1,7 @@
+// Copyright 2015 SiegeLord
+//
+// See LICENSE for terms.
+
 use player::new_player;
 use branch::new_branch;
 use dollar::new_dollar;

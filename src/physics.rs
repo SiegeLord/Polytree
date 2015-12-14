@@ -1,3 +1,7 @@
+// Copyright 2015 SiegeLord
+//
+// See LICENSE for terms.
+
 use branch::get_branch_end;
 use world::{DT, WIDTH, MAX_SPEED};
 

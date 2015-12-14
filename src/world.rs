@@ -1,3 +1,7 @@
+// Copyright 2015 SiegeLord
+//
+// See LICENSE for terms.
+
 use id_map::IdMap;
 
 use allegro::*;

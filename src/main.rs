@@ -1,5 +1,8 @@
-#![feature(catch_panic)]
-#![feature(drain)]
+// Copyright 2015 SiegeLord
+//
+// See LICENSE for terms.
+
+#![feature(recover)]
 
 #[macro_use]
 extern crate allegro;
@@ -159,9 +162,9 @@ fn game()
 
 allegro_main!
 {
-	use std::thread::catch_panic;
+	use std::panic::recover;
 
-	match catch_panic(game)
+	match recover(game)
 	{
 		Err(e) =>
 		{

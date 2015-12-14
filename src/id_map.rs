@@ -1,3 +1,7 @@
+// Copyright 2015 SiegeLord
+//
+// See LICENSE for terms.
+
 #![allow(dead_code)]
 
 use std::collections::HashMap;

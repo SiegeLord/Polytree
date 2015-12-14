@@ -23,6 +23,8 @@ Climb the branches to get away from the bottom of the screen before the time run
 
 You should be able to compile it by getting a nightly Rust, installing Allegro 5.1.x and then running `cargo run`.
 
+On Windows, download Allegro 5.1.x windows binaries into a sub-directory called `allegro` (it'll contain the `include` and `lib` directories) and then run `build_windows_msys.sh` from the MSYS shell (using MSVC linker will work too, so examine the script for what needs to be done). The resulting binary will be inside the `target/release` directory. If combined with the DLLs you downloaded, it should work great.
+
 # Rules
 
 ## Genre requirements
@@ -70,3 +72,8 @@ Unused.
 ## Data attributions.
 
 Energon font was found at http://www.dafont.com/energon.font. 
+
+
+## License
+
+GPL-v3

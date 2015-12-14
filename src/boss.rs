@@ -1,3 +1,7 @@
+// Copyright 2015 SiegeLord
+//
+// See LICENSE for terms.
+
 use world::{WorldState, random_color, Object, DEATH, DT, BOSS_RX, BOSS_RY, BOSS_RATE};
 use dollar::new_dollar;
 use std::f32::consts::PI;

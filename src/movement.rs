@@ -1,3 +1,7 @@
+// Copyright 2015 SiegeLord
+//
+// See LICENSE for terms.
+
 simple_behavior!
 {
 	OldPos[obj.has_pos] |_id, obj, _state|
