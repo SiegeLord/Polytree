@@ -18,7 +18,7 @@ pub fn start_stage(stage: i32, state: &mut WorldState)
 	let player = new_player(0 /* Terrible */, state);
 	let player_id = state.add_object(player);
 	info!("Starting stage: {}", stage);
-	let dollar_color = random_color(&state.core);
+	let dollar_color = random_color();
 	let stage_obj = Object
 	{
 		is_game: true,
@@ -30,10 +30,10 @@ pub fn start_stage(stage: i32, state: &mut WorldState)
 	};
 	// This is awkward, I want to be able to set the player's parent, but I don't have access to it until I add the stage... yet I want to let the stage know the player_id
 	let stage_id = state.add_object(stage_obj);
-	let mut branch = new_branch(stage_id, random_color(&state.core), -200.0, 0.0, -256.0, -192.0, time);
+	let mut branch = new_branch(stage_id, random_color(), -200.0, 0.0, -256.0, -192.0, time);
 	branch.branch_spawns = 2;
 	state.add_object(branch);
-	let mut branch = new_branch(stage_id, random_color(&state.core), 200.0, 0.0, 256.0, -192.0, time);
+	let mut branch = new_branch(stage_id, random_color(), 200.0, 0.0, 256.0, -192.0, time);
 	branch.branch_spawns = 2;
 	state.add_object(branch);
 	if stage % 3 == 0
@@ -153,7 +153,7 @@ simple_behavior!
 		if time_left.abs() < 1.0
 		{
 			let a = 1.0 - time_left.abs() / 1.0;
-			let c = state.core.map_rgba_f(a, a, a, a);
+			let c = Color::from_rgba_f(a, a, a, a);
 			state.prim.draw_filled_rectangle(-WIDTH / 2.0, 0.0, WIDTH / 2.0, -DEATH, c);
 		}
 		
@@ -164,7 +164,7 @@ simple_behavior!
 			{
 				a = 1.0;
 			}
-			let c = state.core.map_rgba_f(0.0, 0.0, 0.0, a);
+			let c = Color::from_rgba_f(0.0, 0.0, 0.0, a);
 			let y = state.disp.get_height() as f32 / scale;
 			state.prim.draw_filled_rectangle(-WIDTH / 2.0, 0.0, WIDTH / 2.0, -y, c);
 		}
@@ -184,7 +184,7 @@ simple_behavior!
 		let x1 = -WIDTH / 2.0 + 50.0;
 		let x2 = WIDTH / 2.0 - 50.0;
 		
-		let c = state.core.map_rgba(128, 128, 128, 128);
+		let c = Color::from_rgba(128, 128, 128, 128);
 		state.core.draw_text(&state.ui_font, c, 0.0, -y + 50.0, FontAlign::Centre, "POLYTREE");
 		state.core.draw_text(&state.ui_font, c, x1, -y + 50.0, FontAlign::Left, &stage_text);
 		state.core.draw_text(&state.ui_font, c, x2, -y + 50.0, FontAlign::Right, &time_text);

@@ -26,7 +26,7 @@ pub fn new_player(parent: usize, state: &WorldState) -> Object
 		size: 15.0,
 		parent: parent,
 		sprite: Some(state.player.clone()),
-		color: random_color(&state.core),
+		color: random_color(),
 		..Object::new()
 	}
 }

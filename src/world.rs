@@ -5,7 +5,6 @@
 use id_map::IdMap;
 
 use allegro::*;
-use allegro_sys::*;
 use allegro_primitives::*;
 use allegro_font::*;
 use allegro_ttf::*;
@@ -121,12 +120,12 @@ impl Object
 			size: 10.0,
 
 			is_dollar: false,
-			dollar_spawn_color: Color(ALLEGRO_COLOR{r: 0.0, g: 0.0, b: 0.0, a: 0.0}),
+			dollar_spawn_color: Color::from_rgba(0, 0, 0, 0),
 			
 			is_boss: false,
 			
 			sprite: None,
-			color: Color(ALLEGRO_COLOR{r: 0.0, g: 0.0, b: 0.0, a: 0.0}),
+			color: Color::from_rgba(0, 0, 0, 0),
 		}
 	}
 }
@@ -358,10 +357,10 @@ fn hsv_to_rgb(hue: f32, saturation: f32, value: f32) -> (f32, f32, f32)
 	}
 }
 
-pub fn random_color(core: &Core) -> Color
+pub fn random_color() -> Color
 {
 	let mut rng = rand::thread_rng();
 	let (r, g, b) = hsv_to_rgb(rng.gen_range(0.0, 360.0), 0.5, 1.0);
 	info!("Chosen: {} {} {}", r, g, b);
-	core.map_rgb_f(r, g, b)
+	Color::from_rgb_f(r, g, b)
 }

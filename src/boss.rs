@@ -19,7 +19,7 @@ pub fn new_boss(parent: usize, dollar_spawn_color: Color, state: &WorldState) ->
 		parent: parent,
 		start_time: state.time,
 		sprite: Some(state.boss.clone()),
-		color: random_color(&state.core),
+		color: random_color(),
 		size: 32.0,
 		dollar_spawn_color: dollar_spawn_color,
 		..Object::new()

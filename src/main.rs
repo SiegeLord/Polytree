@@ -152,7 +152,7 @@ fn game()
 
 		let cur_time = world.state.core.get_time() as f32;
 		world.state.draw_interp = ((cur_time - offset - world.state.time) / DT) as f32;
-		world.state.core.clear_to_color(world.state.core.map_rgb(0, 0, 0));
+		world.state.core.clear_to_color(Color::from_rgb(0, 0, 0));
 		world.draw();
 		world.state.core.flip_display();
 	}

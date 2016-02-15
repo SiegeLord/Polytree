@@ -74,8 +74,8 @@ simple_behavior!
 		let end_y = dt * obj.branch_dir_y + obj.branch_start_y;
 		
 		let alpha = 1.0 - 0.5 * dt / obj.branch_max_dur;
-		let (r, g, b) = obj.color.unmap_rgb_f();
-		let c = state.core.map_rgba_f(r * alpha, g * alpha, b * alpha, alpha);
+		let (r, g, b) = obj.color.to_rgb_f();
+		let c = Color::from_rgba_f(r * alpha, g * alpha, b * alpha, alpha);
 		
 		state.prim.draw_line(obj.branch_start_x, obj.branch_start_y, end_x, end_y, c, 10.0);
 	}
