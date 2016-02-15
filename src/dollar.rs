@@ -2,31 +2,30 @@
 //
 // See LICENSE for terms.
 
+use id_map::HasId;
 use world::{Object, WorldState};
 
 use allegro::*;
 
-pub fn new_dollar(parent: usize, color: Color, x: f32, y: f32, vx: f32, vy: f32, state: &WorldState) -> Object
+pub fn new_dollar(parent: usize, color: Color, x: f32, y: f32, vx: f32, vy: f32, state: &mut WorldState) -> Object
 {
-	Object
-	{
-		is_dollar: true,
-		affected_by_gravity: true,
-		is_solid: true,
-		size: 10.0,
-		has_pos: true,
-		x: x,
-		y: y,
-		old_x: x,
-		old_y: y,
-		has_vel: true,
-		vx: vx,
-		vy: vy,
-		parent: parent,
-		sprite: Some(state.dollar.clone()),
-		color: color,
-		..Object::new()
-	}
+	let mut obj = Object::new(state.new_id());
+	obj.is_dollar = true;
+	obj.affected_by_gravity = true;
+	obj.is_solid = true;
+	obj.size = 10.0;
+	obj.has_pos = true;
+	obj.x = x;
+	obj.y = y;
+	obj.old_x = x;
+	obj.old_y = y;
+	obj.has_vel = true;
+	obj.vx = vx;
+	obj.vy = vy;
+	obj.parent = parent;
+	obj.sprite = Some(state.dollar.clone());
+	obj.color = color;
+	obj
 }
 
 pub struct DollarLogic;
@@ -41,11 +40,11 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for DollarLogic
 	fn handle_objects(&mut self, objects: &mut ::id_map::IdMap<::world::Object>, state: &mut ::world::WorldState)
 	{
 		let mut player_id = 0;
-		for &(id, ref obj) in objects.elems()
+		for obj in objects.elems()
 		{
 			if obj.is_player
 			{
-				player_id = id;
+				player_id = obj.get_id();
 				break;
 			}
 		}
@@ -60,7 +59,7 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for DollarLogic
 		};
 		
 		let mut collided = false;
-		for &mut (id, ref mut obj) in objects.elems_mut()
+		for obj in objects.elems_mut()
 		{
 			if self.check_object(obj)
 			{
@@ -69,13 +68,13 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for DollarLogic
 				let r = obj.size + player_size;
 				if dx * dx + dy * dy < r * r
 				{
-					state.remove_object(id);
+					state.remove_object(obj.get_id());
 					collided = true;
 				}
 				
 				if obj.y >= -obj.size
 				{
-					state.remove_object(id);
+					state.remove_object(obj.get_id());
 				}
 			}
 		}
@@ -107,7 +106,7 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for SpriteDraw
 	fn handle_objects(&mut self, objects: &mut ::id_map::IdMap<::world::Object>, state: &mut ::world::WorldState)
 	{
 		state.core.hold_bitmap_drawing(true);
-		for &(_, ref obj) in objects.elems()
+		for obj in objects.elems()
 		{
 			if self.check_object(obj)
 			{

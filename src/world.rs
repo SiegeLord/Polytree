@@ -2,7 +2,7 @@
 //
 // See LICENSE for terms.
 
-use id_map::IdMap;
+use id_map::{HasId, UniqueId, IdMap, IdMint};
 
 use allegro::*;
 use allegro_primitives::*;
@@ -24,6 +24,7 @@ pub const BOSS_RATE: f32 = 10.0;
 
 pub struct Object
 {
+	id: UniqueId,
 	pub parent: usize,
 	
 	pub has_pos: bool,
@@ -75,10 +76,11 @@ pub struct Object
 
 impl Object
 {
-	pub fn new() -> Object
+	pub fn new(id: UniqueId) -> Object
 	{
 		Object
 		{
+			id: id,
 			parent: 0,
 			
 			has_pos: false,
@@ -130,9 +132,17 @@ impl Object
 	}
 }
 
+impl HasId for Object
+{
+	fn get_id(&self) -> usize
+	{
+		self.id.get()
+	}
+}
+
 macro_rules! simple_behavior
 {
-	($name: ident[$check: expr] |$id: ident, $obj: ident, $state: ident| $e: expr) =>
+	($name: ident[$check: expr] |$obj: ident, $state: ident| $e: expr) =>
 	{
 		pub struct $name;
 		
@@ -145,7 +155,7 @@ macro_rules! simple_behavior
 			
 			fn handle_objects(&mut self, objects: &mut ::id_map::IdMap<::world::Object>, $state: &mut ::world::WorldState)
 			{
-				for &mut ($id, ref mut $obj) in objects.elems_mut()
+				for $obj in objects.elems_mut()
 				{
 					if self.check_object($obj)
 					{
@@ -174,9 +184,9 @@ pub struct WorldState
 	pub disp: Display,
 	pub ttf: TtfAddon,
 	
-	new_objects: Vec<(usize, Object)>,
-	// This follows the object's ids.
-	next_id: usize,
+	pub id_mint: IdMint,
+	
+	new_objects: Vec<Object>,
 	ids_to_remove: HashSet<usize>,
 	
 	pub key_down: Option<KeyCode>,
@@ -193,17 +203,19 @@ pub struct WorldState
 
 impl WorldState
 {
-	pub fn add_object(&mut self, obj: Object) -> usize
+	pub fn add_object(&mut self, obj: Object)
 	{
-		let id = self.next_id;
-		self.new_objects.push((id, obj));
-		self.next_id += 1;
-		id
+		self.new_objects.push(obj);
 	}
 	
 	pub fn remove_object(&mut self, id: usize)
 	{
 		self.ids_to_remove.insert(id);
+	}
+	
+	pub fn new_id(&mut self) -> UniqueId
+	{
+		self.id_mint.new_id()
 	}
 }
 
@@ -245,7 +257,7 @@ impl World
 				draw_interp: 0.0,
 				new_objects: vec![],
 				ids_to_remove: HashSet::new(),
-				next_id: 1,
+				id_mint: IdMint::new(),
 				dollar: Rc::new(dollar),
 				boss: Rc::new(boss),
 				player: Rc::new(player),
@@ -269,12 +281,10 @@ impl World
 			behavior.handle_objects(&mut self.objects, &mut self.state);
 		}
 		
-		for (expected_id, obj) in self.state.new_objects.drain(..)
+		for obj in self.state.new_objects.drain(..)
 		{
-			let actual_id = self.objects.insert(obj);	
-			assert_eq!(actual_id, expected_id);
+			self.objects.insert(obj);
 		}
-		self.state.next_id = self.objects.next_id();
 		
 		let mut old_ids_to_remove = vec![];
 		old_ids_to_remove.extend(&self.state.ids_to_remove);
@@ -282,13 +292,13 @@ impl World
 		while !old_ids_to_remove.is_empty()
 		{
 			new_ids_to_remove.clear();
-			for &(id, ref obj) in self.objects.elems()
+			for obj in self.objects.elems()
 			{
 				for &dead_id in &old_ids_to_remove
 				{
 					if obj.parent == dead_id
 					{
-						new_ids_to_remove.push(id);
+						new_ids_to_remove.push(obj.get_id());
 					}
 				}
 			}

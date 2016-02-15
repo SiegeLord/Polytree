@@ -7,7 +7,7 @@ use world::{DT, WIDTH, MAX_SPEED};
 
 simple_behavior!
 {
-	Gravity[obj.affected_by_gravity] |_id, obj, _state|
+	Gravity[obj.affected_by_gravity] |obj, _state|
 	{
 		obj.vy += 128.0 * DT;
 	}
@@ -66,7 +66,7 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for Physics
 	fn handle_objects(&mut self, objects: &mut ::id_map::IdMap<::world::Object>, state: &mut ::world::WorldState)
 	{
 		self.branches.clear();
-		for &(_, ref obj) in objects.elems()
+		for obj in objects.elems()
 		{
 			if obj.is_branch
 			{
@@ -75,7 +75,7 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for Physics
 			}
 		}
 		
-		for &mut (_, ref mut obj) in objects.elems_mut()
+		for obj in objects.elems_mut()
 		{
 			if obj.has_vel && obj.has_pos
 			{

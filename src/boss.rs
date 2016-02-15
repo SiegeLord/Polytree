@@ -8,27 +8,25 @@ use std::f32::consts::PI;
 use rand::{self, Rng};
 use allegro::*;
 
-pub fn new_boss(parent: usize, dollar_spawn_color: Color, state: &WorldState) -> Object
+pub fn new_boss(parent: usize, dollar_spawn_color: Color, state: &mut WorldState) -> Object
 {
-	Object
-	{
-		is_boss: true,
-		has_pos: true,
-		x: BOSS_RX,
-		y: -DEATH,
-		parent: parent,
-		start_time: state.time,
-		sprite: Some(state.boss.clone()),
-		color: random_color(),
-		size: 32.0,
-		dollar_spawn_color: dollar_spawn_color,
-		..Object::new()
-	}
+	let mut obj = Object::new(state.new_id());
+	obj.is_boss = true;
+	obj.has_pos = true;
+	obj.x = BOSS_RX;
+	obj.y = -DEATH;
+	obj.parent = parent;
+	obj.start_time = state.time;
+	obj.sprite = Some(state.boss.clone());
+	obj.color = random_color();
+	obj.size = 32.0;
+	obj.dollar_spawn_color = dollar_spawn_color;
+	obj
 }
 
 simple_behavior!
 {
-	BossLogic[obj.is_boss] |_id, obj, state|
+	BossLogic[obj.is_boss] |obj, state|
 	{
 		let theta = 2.0 * PI * (state.time - obj.start_time) / BOSS_RATE;
 		obj.x = BOSS_RX * theta.cos();

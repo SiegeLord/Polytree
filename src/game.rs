@@ -7,6 +7,7 @@ use branch::new_branch;
 use dollar::new_dollar;
 use boss::new_boss;
 use world::{Object, WorldState, DT, DEATH, WIDTH, DURATION, random_color};
+use id_map::HasId;
 
 use allegro::*;
 use allegro_font::*;
@@ -15,25 +16,26 @@ use rand::{self, Rng};
 pub fn start_stage(stage: i32, state: &mut WorldState)
 {
 	let time = state.time;
-	let player = new_player(0 /* Terrible */, state);
-	let player_id = state.add_object(player);
+	let stage_uniq_id = state.new_id();
+	let player = new_player(stage_uniq_id.get(), state);
+	let player_id = player.get_id();
+	state.add_object(player);
 	info!("Starting stage: {}", stage);
 	let dollar_color = random_color();
-	let stage_obj = Object
-	{
-		is_game: true,
-		stage: stage,
-		player_id: player_id,
-		start_time: time,
-		dollar_spawn_color: dollar_color,
-		..Object::new()
-	};
-	// This is awkward, I want to be able to set the player's parent, but I don't have access to it until I add the stage... yet I want to let the stage know the player_id
-	let stage_id = state.add_object(stage_obj);
-	let mut branch = new_branch(stage_id, random_color(), -200.0, 0.0, -256.0, -192.0, time);
+
+	let mut stage_obj = Object::new(stage_uniq_id);
+	stage_obj.is_game = true;
+	stage_obj.stage = stage;
+	stage_obj.player_id = player_id;
+	stage_obj.start_time = time;
+	stage_obj.dollar_spawn_color = dollar_color;
+
+	let stage_id = stage_obj.get_id();
+	state.add_object(stage_obj);
+	let mut branch = new_branch(stage_id, random_color(), -200.0, 0.0, -256.0, -192.0, time, state.new_id());
 	branch.branch_spawns = 2;
 	state.add_object(branch);
-	let mut branch = new_branch(stage_id, random_color(), 200.0, 0.0, 256.0, -192.0, time);
+	let mut branch = new_branch(stage_id, random_color(), 200.0, 0.0, 256.0, -192.0, time, state.new_id());
 	branch.branch_spawns = 2;
 	state.add_object(branch);
 	if stage % 3 == 0
@@ -45,7 +47,7 @@ pub fn start_stage(stage: i32, state: &mut WorldState)
 
 simple_behavior!
 {
-	GameInput[obj.is_game] |_id, obj, state|
+	GameInput[obj.is_game] |obj, state|
 	{
 		if let Some(KeyCode::Escape) = state.key_down
 		{
@@ -75,11 +77,11 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for GameLogic
 		let mut game_id = 0;
 		let mut player_id = 0;
 		let mut stage = 0;
-		for &mut (id, ref mut obj) in objects.elems_mut()
+		for obj in objects.elems_mut()
 		{
 			if self.check_object(obj)
 			{
-				game_id = id;
+				game_id = obj.get_id();
 				stage = obj.stage;
 				
 				time_left = DURATION - (state.time - obj.start_time);
@@ -133,9 +135,6 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for GameLogic
 		
 		if time_left < -2.0
 		{
-			// See above. This is terrible.
-			objects.get_mut(player_id).map(|obj| obj.parent = game_id);
-			
 			state.remove_object(game_id);
 			let advance = objects.get(player_id).map_or(0, |_| 1);
 			start_stage(stage + advance, state);
@@ -145,7 +144,7 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for GameLogic
 
 simple_behavior!
 {
-	GameDraw[obj.is_game] |_id, obj, state|
+	GameDraw[obj.is_game] |obj, state|
 	{
 		let time_left = DURATION - (state.time - obj.start_time);
 		let scale = state.disp.get_width() as f32 / WIDTH;

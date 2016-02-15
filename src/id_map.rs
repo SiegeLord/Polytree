@@ -6,15 +6,58 @@
 
 use std::collections::HashMap;
 
-pub struct IdMap<T>
+// Wrapper type to prevent giving the same id to multiple objects
+pub struct UniqueId(usize);
+
+impl UniqueId
 {
-	// id, element
-	elems: Vec<(usize, T)>,
-	id_to_idx: HashMap<usize, usize>,
+	pub fn empty() -> UniqueId
+	{
+		UniqueId(0)
+	}
+
+	pub fn get(&self) -> usize
+	{
+		self.0
+	}
+}
+
+pub trait HasId
+{
+	fn get_id(&self) -> usize;
+}
+
+pub struct IdMint
+{
 	next_id: usize,
 }
 
-impl<T> IdMap<T>
+impl IdMint
+{
+	pub fn new() -> IdMint
+	{
+		IdMint
+		{
+			next_id: 1,
+		}
+	}
+
+	// Yeah, you could just make a new IdMint and screw everything up... don't do it.
+	pub fn new_id(&mut self) -> UniqueId
+	{
+		let ret = self.next_id;
+		self.next_id += 1;
+		UniqueId(ret)
+	}
+}
+
+pub struct IdMap<T>
+{
+	elems: Vec<T>,
+	id_to_idx: HashMap<usize, usize>,
+}
+
+impl<T: HasId> IdMap<T>
 {
 	pub fn new() -> IdMap<T>
 	{
@@ -22,38 +65,36 @@ impl<T> IdMap<T>
 		{
 			elems: vec![],
 			id_to_idx: HashMap::new(),
-			next_id: 1,
 		}
 	}
 
-	pub fn insert(&mut self, e: T) -> usize
+	pub fn insert(&mut self, e: T)
 	{
-		let id = self.next_id;
-		self.id_to_idx.insert(id, self.elems.len());
-		self.elems.push((id, e));
-		self.next_id += 1;
-		id
+		assert!(e.get_id() > 0);
+		assert!(!self.id_to_idx.contains_key(&e.get_id()));
+		self.id_to_idx.insert(e.get_id(), self.elems.len());
+		self.elems.push(e);
 	}
 
 	pub fn remove(&mut self, id: usize)
 	{
 		let idx = self.id_to_idx[&id];
 		// This element will be moved to the idx.
-		*self.id_to_idx.get_mut(&self.elems.last().unwrap().0).unwrap() = idx;
+		*self.id_to_idx.get_mut(&self.elems.last().unwrap().get_id()).unwrap() = idx;
 		self.elems.swap_remove(idx);
 		self.id_to_idx.remove(&id);
 	}
 
 	pub fn get(&self, id: usize) -> Option<&T>
 	{
-		self.id_to_idx.get(&id).map(|&idx| &self.elems[idx].1)
+		self.id_to_idx.get(&id).map(|&idx| &self.elems[idx])
 	}
 
 	pub fn get_mut(&mut self, id: usize) -> Option<&mut T>
 	{
 		match self.id_to_idx.get(&id)
 		{
-			Some(&idx) => Some(&mut self.elems[idx].1),
+			Some(&idx) => Some(&mut self.elems[idx]),
 			None => None
 		}
 	}
@@ -63,36 +104,36 @@ impl<T> IdMap<T>
 		self.elems.len()
 	}
 
-	pub fn elems(&self) -> &[(usize, T)]
+	pub fn elems(&self) -> &[T]
 	{
 		&self.elems
 	}
 
-	pub fn elems_mut(&mut self) -> &mut [(usize, T)]
+	pub fn elems_mut(&mut self) -> &mut [T]
 	{
 		&mut self.elems
-	}
-	
-	pub fn next_id(&self) -> usize
-	{
-		self.next_id
 	}
 }
 
 #[test]
 fn basic()
 {
+	impl HasId for i32
+	{
+		fn get_id(&self) -> usize
+		{
+			*self as usize
+		}
+	}
+
 	let mut map = IdMap::<i32>::new();
-	let id1 = map.insert(1);
-	let id2 = map.insert(2);
-	assert_eq!(1, *map.get(id1).unwrap());
-	assert_eq!(2, *map.get(id2).unwrap());
+	assert_eq!(1, *map.get(1).unwrap());
+	assert_eq!(2, *map.get(2).unwrap());
 	assert_eq!(2, map.len());
-	map.remove(id1);
-	assert_eq!(2, *map.get(id2).unwrap());
+	map.remove(1);
+	assert_eq!(2, *map.get(2).unwrap());
 	assert_eq!(1, map.len());
-	let id3 = map.insert(3);
-	assert_eq!(2, *map.get(id2).unwrap());
-	assert_eq!(3, *map.get(id3).unwrap());
+	assert_eq!(2, *map.get(2).unwrap());
+	assert_eq!(3, *map.get(3).unwrap());
 	assert_eq!(2, map.len());
 }
