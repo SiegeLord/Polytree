@@ -59,8 +59,8 @@ fn game()
 	let logger_config = fern::DispatchConfig
 	{
 		format: Box::new(|msg: &str, level: &log::LogLevel, loc: &log::LogLocation| {
-			format!("{} {} {}:{}  {}", time::now().strftime("%Y-%m-%d %H:%M:%S").unwrap(),
-				level, loc.module_path(), loc.line(), msg)
+			format!("{} {} {: >32}   {}", time::now().strftime("%Y-%m-%d %H:%M:%S").unwrap(),
+				level, format!("{}:{}", loc.module_path(), loc.line()), msg)
 		}),
 		output: vec![fern::OutputConfig::stderr(), fern::OutputConfig::file_with_options("game.log", &logfile_options),],
 		level: log::LogLevelFilter::Trace,
