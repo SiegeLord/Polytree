@@ -23,7 +23,7 @@ pub fn new_dollar(parent: usize, color: Color, x: f32, y: f32, vx: f32, vy: f32,
 	obj.vx = vx;
 	obj.vy = vy;
 	obj.parent = parent;
-	obj.sprite = Some(state.dollar.clone());
+	obj.sprite = Some(state.bitmap_manager.load(&state.core, "data/dollar.png").unwrap());
 	obj.color = color;
 	obj
 }

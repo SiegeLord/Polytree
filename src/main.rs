@@ -29,6 +29,7 @@ mod movement;
 mod branch;
 mod dollar;
 mod boss;
+mod bitmap_manager;
 
 use debug_draw::*;
 use physics::*;

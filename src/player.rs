@@ -24,7 +24,7 @@ pub fn new_player(parent: usize, state: &mut WorldState) -> Object
 	obj.old_y = -50.0;
 	obj.size = 15.0;
 	obj.parent = parent;
-	obj.sprite = Some(state.player.clone());
+	obj.sprite = Some(state.bitmap_manager.load(&state.core, "data/player.png").unwrap());
 	obj.color = random_color();
 	obj
 }

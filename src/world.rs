@@ -3,6 +3,7 @@
 // See LICENSE for terms.
 
 use id_map::{HasId, UniqueId, IdMap, IdMint};
+use bitmap_manager::BitmapManager;
 
 use allegro::*;
 use allegro_primitives::*;
@@ -196,9 +197,7 @@ pub struct WorldState
 	pub time: f32,
 	pub draw_interp: f32,
 	pub ui_font: Font,
-	pub dollar: Rc<Bitmap>,
-	pub boss: Rc<Bitmap>,
-	pub player: Rc<Bitmap>,
+	pub bitmap_manager: BitmapManager,
 }
 
 impl WorldState
@@ -233,13 +232,7 @@ impl World
 	pub fn new(core: Core, prim: PrimitivesAddon, disp: Display, ttf: TtfAddon) -> World
 	{
 		let font_path = "data/Energon.ttf";
-		let dollar_path = "data/dollar.png";
-		let boss_path = "data/boss.png";
-		let player_path = "data/player.png";
 		let ui_font = ttf.load_ttf_font(font_path, 64, TtfFlags::zero()).expect(&format!("Couldn't load {}", font_path));
-		let dollar = Bitmap::load(&core, dollar_path).expect(&format!("Couldn't load {}", dollar_path));
-		let boss = Bitmap::load(&core, boss_path).expect(&format!("Couldn't load {}", boss_path));
-		let player = Bitmap::load(&core, player_path).expect(&format!("Couldn't load {}", player_path));
 		World
 		{
 			state: WorldState
@@ -258,9 +251,7 @@ impl World
 				new_objects: vec![],
 				ids_to_remove: HashSet::new(),
 				id_mint: IdMint::new(),
-				dollar: Rc::new(dollar),
-				boss: Rc::new(boss),
-				player: Rc::new(player),
+				bitmap_manager: BitmapManager::new(),
 			},
 			objects: IdMap::new(),
 			logic_behaviors: vec![],

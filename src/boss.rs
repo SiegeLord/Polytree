@@ -17,7 +17,7 @@ pub fn new_boss(parent: usize, dollar_spawn_color: Color, state: &mut WorldState
 	obj.y = -DEATH;
 	obj.parent = parent;
 	obj.start_time = state.time;
-	obj.sprite = Some(state.boss.clone());
+	obj.sprite = Some(state.bitmap_manager.load(&state.core, "data/boss.png").unwrap());
 	obj.color = random_color();
 	obj.size = 32.0;
 	obj.dollar_spawn_color = dollar_spawn_color;
