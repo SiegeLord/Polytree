@@ -2,8 +2,9 @@
 //
 // See LICENSE for terms.
 
-use engine::id_map::{HasId, IdMap};
 use std::collections::HashSet;
+
+use engine::id_map::{HasId, IdMap};
 
 pub trait Behavior<O, S>
 {

@@ -2,8 +2,6 @@
 //
 // See LICENSE for terms.
 
-#![allow(dead_code)]
-
 use std::collections::HashMap;
 
 // Wrapper type to prevent giving the same id to multiple objects
@@ -127,6 +125,8 @@ fn basic()
 	}
 
 	let mut map = IdMap::<i32>::new();
+	map.insert(1);
+	map.insert(2);
 	assert_eq!(1, *map.get(1).unwrap());
 	assert_eq!(2, *map.get(2).unwrap());
 	assert_eq!(2, map.len());
@@ -134,6 +134,7 @@ fn basic()
 	assert_eq!(2, *map.get(2).unwrap());
 	assert_eq!(1, map.len());
 	assert_eq!(2, *map.get(2).unwrap());
+	map.insert(3);
 	assert_eq!(3, *map.get(3).unwrap());
 	assert_eq!(2, map.len());
 }

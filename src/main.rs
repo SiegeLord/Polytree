@@ -110,7 +110,6 @@ fn game()
 	world.add_draw_behavior(Box::new(GameDraw));
 	
 	start_stage(1, &mut world.state);
-
 	timer.start();
 	let offset = world.state.core.get_time() as f32;
 	'exit: loop
