@@ -19,8 +19,7 @@ extern crate time;
 extern crate rand;
 
 #[macro_use]
-mod world;
-mod id_map;
+mod game_state;
 mod debug_draw;
 mod physics;
 mod game;
@@ -29,17 +28,20 @@ mod movement;
 mod branch;
 mod dollar;
 mod boss;
-mod bitmap_manager;
+mod engine;
+mod parent;
 
 use debug_draw::*;
 use physics::*;
-use world::*;
+use engine::world::*;
+use game_state::*;
 use game::*;
 use movement::*;
 use player::*;
 use branch::*;
 use dollar::*;
 use boss::*;
+use parent::*;
 
 use allegro::*;
 use allegro_dialog::*;
@@ -85,7 +87,8 @@ fn game()
 	q.register_event_source(core.get_keyboard_event_source());
 	q.register_event_source(timer.get_event_source());
 
-	let mut world = World::new(core, prim, disp, ttf);
+	let state = GameState::new(core, prim, disp, ttf);
+	let mut world = World::<Object, GameState>::new(state);
 	
 	world.add_logic_behavior(Box::new(OldPos));
 	world.add_logic_behavior(Box::new(Physics::new()));
@@ -95,6 +98,8 @@ fn game()
 	world.add_logic_behavior(Box::new(Gravity));
 	world.add_logic_behavior(Box::new(DollarLogic));
 	world.add_logic_behavior(Box::new(BossLogic));
+	// Must be last.
+	world.add_logic_behavior(Box::new(ParentLogic));
 	
 	world.add_input_behavior(Box::new(GameInput));
 	world.add_input_behavior(Box::new(PlayerInput));

@@ -6,14 +6,14 @@ use player::new_player;
 use branch::new_branch;
 use dollar::new_dollar;
 use boss::new_boss;
-use world::{Object, WorldState, DT, DEATH, WIDTH, DURATION, random_color};
-use id_map::HasId;
+use game_state::{Object, GameState, DT, DEATH, WIDTH, DURATION, random_color};
+use engine::id_map::HasId;
 
 use allegro::*;
 use allegro_font::*;
 use rand::{self, Rng};
 
-pub fn start_stage(stage: i32, state: &mut WorldState)
+pub fn start_stage(stage: i32, state: &mut GameState)
 {
 	let time = state.time;
 	let stage_uniq_id = state.new_id();
@@ -63,14 +63,14 @@ simple_behavior!
 
 pub struct GameLogic;
 
-impl ::world::Behavior<::world::Object, ::world::WorldState> for GameLogic
+impl ::engine::world::Behavior<::game_state::Object, ::game_state::GameState> for GameLogic
 {
-	fn check_object(&self, obj: &::world::Object) -> bool
+	fn check_object(&self, obj: &::game_state::Object) -> bool
 	{
 		obj.is_game
 	}
 	
-	fn handle_objects(&mut self, objects: &mut ::id_map::IdMap<::world::Object>, state: &mut ::world::WorldState)
+	fn handle_objects(&mut self, objects: &mut ::engine::id_map::IdMap<::game_state::Object>, state: &mut ::game_state::GameState)
 	{
 		// Can't access other objects in a mutable way... this happens every time, there must be a better way.
 		let mut time_left = 0.0;

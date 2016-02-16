@@ -2,12 +2,12 @@
 //
 // See LICENSE for terms.
 
-use id_map::HasId;
-use world::{Object, WorldState};
+use engine::id_map::HasId;
+use game_state::{Object, GameState};
 
 use allegro::*;
 
-pub fn new_dollar(parent: usize, color: Color, x: f32, y: f32, vx: f32, vy: f32, state: &mut WorldState) -> Object
+pub fn new_dollar(parent: usize, color: Color, x: f32, y: f32, vx: f32, vy: f32, state: &mut GameState) -> Object
 {
 	let mut obj = Object::new(state.new_id());
 	obj.is_dollar = true;
@@ -30,14 +30,14 @@ pub fn new_dollar(parent: usize, color: Color, x: f32, y: f32, vx: f32, vy: f32,
 
 pub struct DollarLogic;
 
-impl ::world::Behavior<::world::Object, ::world::WorldState> for DollarLogic
+impl ::engine::world::Behavior<::game_state::Object, ::game_state::GameState> for DollarLogic
 {
-	fn check_object(&self, obj: &::world::Object) -> bool
+	fn check_object(&self, obj: &::game_state::Object) -> bool
 	{
 		obj.is_dollar
 	}
 	
-	fn handle_objects(&mut self, objects: &mut ::id_map::IdMap<::world::Object>, state: &mut ::world::WorldState)
+	fn handle_objects(&mut self, objects: &mut ::engine::id_map::IdMap<::game_state::Object>, state: &mut ::game_state::GameState)
 	{
 		let mut player_id = 0;
 		for obj in objects.elems()
@@ -96,14 +96,14 @@ impl ::world::Behavior<::world::Object, ::world::WorldState> for DollarLogic
 
 pub struct SpriteDraw;
 
-impl ::world::Behavior<::world::Object, ::world::WorldState> for SpriteDraw
+impl ::engine::world::Behavior<::game_state::Object, ::game_state::GameState> for SpriteDraw
 {
-	fn check_object(&self, obj: &::world::Object) -> bool
+	fn check_object(&self, obj: &::game_state::Object) -> bool
 	{
 		obj.sprite.is_some()
 	}
 	
-	fn handle_objects(&mut self, objects: &mut ::id_map::IdMap<::world::Object>, state: &mut ::world::WorldState)
+	fn handle_objects(&mut self, objects: &mut ::engine::id_map::IdMap<::game_state::Object>, state: &mut ::game_state::GameState)
 	{
 		state.core.hold_bitmap_drawing(true);
 		for obj in objects.elems()

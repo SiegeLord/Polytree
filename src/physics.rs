@@ -3,7 +3,7 @@
 // See LICENSE for terms.
 
 use branch::get_branch_end;
-use world::{DT, WIDTH, MAX_SPEED};
+use game_state::{DT, WIDTH, MAX_SPEED};
 
 simple_behavior!
 {
@@ -56,14 +56,14 @@ impl Physics
 	}
 }
 		
-impl ::world::Behavior<::world::Object, ::world::WorldState> for Physics
+impl ::engine::world::Behavior<::game_state::Object, ::game_state::GameState> for Physics
 {
-	fn check_object(&self, _: &::world::Object) -> bool
+	fn check_object(&self, _: &::game_state::Object) -> bool
 	{
 		true
 	}
 	
-	fn handle_objects(&mut self, objects: &mut ::id_map::IdMap<::world::Object>, state: &mut ::world::WorldState)
+	fn handle_objects(&mut self, objects: &mut ::engine::id_map::IdMap<::game_state::Object>, state: &mut ::game_state::GameState)
 	{
 		self.branches.clear();
 		for obj in objects.elems()

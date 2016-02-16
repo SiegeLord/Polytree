@@ -2,13 +2,13 @@
 //
 // See LICENSE for terms.
 
-use world::{WorldState, random_color, Object, DEATH, DT, BOSS_RX, BOSS_RY, BOSS_RATE};
+use game_state::{GameState, random_color, Object, DEATH, DT, BOSS_RX, BOSS_RY, BOSS_RATE};
 use dollar::new_dollar;
 use std::f32::consts::PI;
 use rand::{self, Rng};
 use allegro::*;
 
-pub fn new_boss(parent: usize, dollar_spawn_color: Color, state: &mut WorldState) -> Object
+pub fn new_boss(parent: usize, dollar_spawn_color: Color, state: &mut GameState) -> Object
 {
 	let mut obj = Object::new(state.new_id());
 	obj.is_boss = true;

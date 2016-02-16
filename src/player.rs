@@ -2,13 +2,13 @@
 //
 // See LICENSE for terms.
 
-use world::Object;
+use game_state::Object;
 
-use world::{WorldState, random_color};
+use game_state::{GameState, random_color};
 
 use allegro::*;
 
-pub fn new_player(parent: usize, state: &mut WorldState) -> Object
+pub fn new_player(parent: usize, state: &mut GameState) -> Object
 {
 	let mut obj = Object::new(state.new_id());
 	obj.has_pos = true;

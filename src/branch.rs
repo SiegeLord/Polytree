@@ -2,8 +2,8 @@
 //
 // See LICENSE for terms.
 
-use world::{DT, Object};
-use id_map::UniqueId;
+use game_state::{DT, Object};
+use engine::id_map::UniqueId;
 
 use allegro::*;
 use rand::{self, Rng};
