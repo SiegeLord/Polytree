@@ -43,6 +43,8 @@ use dollar::*;
 use boss::*;
 use parent::*;
 
+use std::fs::OpenOptions;
+
 use allegro::*;
 use allegro_dialog::*;
 use allegro_primitives::*;
@@ -52,13 +54,15 @@ use allegro_image::*;
 
 fn game()
 {
+	let mut logfile_options = OpenOptions::new();
+	logfile_options.write(true).create(true).truncate(true);
 	let logger_config = fern::DispatchConfig
 	{
 		format: Box::new(|msg: &str, level: &log::LogLevel, loc: &log::LogLocation| {
 			format!("{} {} {}:{}  {}", time::now().strftime("%Y-%m-%d %H:%M:%S").unwrap(),
 				level, loc.module_path(), loc.line(), msg)
 		}),
-		output: vec![fern::OutputConfig::stderr()],
+		output: vec![fern::OutputConfig::stderr(), fern::OutputConfig::file_with_options("game.log", &logfile_options),],
 		level: log::LogLevelFilter::Trace,
 	};
 	fern::init_global_logger(logger_config, log::LogLevelFilter::Trace).unwrap();
@@ -178,7 +182,7 @@ allegro_main!
 				e.downcast_ref::<String>().map(|e| e.clone())
 			}).unwrap_or("Unknown error!".to_owned());
 
-			show_native_message_box(None, "Error!", "An error has occurred! Redirect stderr from the command line for more info.", &err, Some("You make me sad."), MESSAGEBOX_ERROR);
+			show_native_message_box(None, "Error!", "An error has occurred! See game.log for more info.", &err, Some("You make me sad."), MESSAGEBOX_ERROR);
 		}
 		Ok(_) => ()
 	}
