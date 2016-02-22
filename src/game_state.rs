@@ -3,7 +3,7 @@
 // See LICENSE for terms.
 
 use engine::world::WorldState;
-use engine::bitmap_manager::BitmapManager;
+use engine::bitmap_cache::BitmapCache;
 use engine::id_map::{HasId, IdMint, UniqueId};
 
 use allegro::*;
@@ -187,7 +187,7 @@ pub struct GameState
 	pub time: f32,
 	pub draw_interp: f32,
 	pub ui_font: Font,
-	pub bitmap_manager: BitmapManager,
+	pub bitmap_manager: BitmapCache,
 }
 
 impl GameState
@@ -212,7 +212,7 @@ impl GameState
 			new_objects: vec![],
 			ids_to_remove: HashSet::new(),
 			id_mint: IdMint::new(),
-			bitmap_manager: BitmapManager::new(),
+			bitmap_manager: BitmapCache::new(),
 		}
 	}
 	

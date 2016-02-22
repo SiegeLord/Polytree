@@ -17,10 +17,10 @@ path = "src/main.rs"
 [dependencies.allegro]
 version = "=0.0.22"
 
-[dependencies.allegro-sys]
+[dependencies.allegro_dialog]
 version = "=0.0.22"
 
-[dependencies.allegro_dialog]
+[dependencies.allegro_audio]
 version = "=0.0.22"
 
 [dependencies.allegro_primitives]

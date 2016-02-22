@@ -6,7 +6,7 @@
 
 #[macro_use]
 extern crate allegro;
-extern crate allegro_sys;
+extern crate allegro_audio;
 extern crate allegro_dialog;
 extern crate allegro_primitives;
 extern crate allegro_font;

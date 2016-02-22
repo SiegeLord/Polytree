@@ -4,6 +4,7 @@
 
 #![allow(dead_code)]
 
-pub mod bitmap_manager;
+pub mod bitmap_cache;
 pub mod id_map;
+pub mod sound_holder;
 pub mod world;
