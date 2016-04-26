@@ -63,14 +63,9 @@ simple_behavior!
 
 pub struct GameLogic;
 
-impl ::engine::world::Behavior<::game_state::Object, ::game_state::GameState> for GameLogic
+complex_behavior!
 {
-	fn check_object(&self, obj: &::game_state::Object) -> bool
-	{
-		obj.is_game
-	}
-	
-	fn handle_objects(&mut self, objects: &mut ::engine::id_map::IdMap<::game_state::Object>, state: &mut ::game_state::GameState)
+	GameLogic[obj.is_game] |self, obj, objects, state|
 	{
 		// Can't access other objects in a mutable way... this happens every time, there must be a better way.
 		let mut time_left = 0.0;

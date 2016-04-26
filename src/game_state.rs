@@ -28,14 +28,14 @@ macro_rules! simple_behavior
 	($name: ident[$check: expr] |$obj: ident, $state: ident| $e: expr) =>
 	{
 		pub struct $name;
-		
+
 		impl ::engine::world::Behavior<::game_state::Object, ::game_state::GameState> for $name
 		{
 			fn check_object(&self, $obj: &::game_state::Object) -> bool
 			{
 				$check
 			}
-			
+
 			fn handle_objects(&mut self, objects: &mut ::engine::id_map::IdMap<::game_state::Object>, $state: &mut ::game_state::GameState)
 			{
 				for $obj in objects.elems_mut()
@@ -50,113 +50,103 @@ macro_rules! simple_behavior
 	}
 }
 
-pub struct Object
+macro_rules! complex_behavior
 {
-	id: UniqueId,
-	pub parent: usize,
-	
-	pub has_pos: bool,
-	pub x: f32,
-	pub y: f32,
-	pub old_x: f32,
-	pub old_y: f32,
-	
-	pub has_vel: bool,
-	pub vx: f32,
-	pub vy: f32,
-	pub ax: f32,
-	pub ay: f32,
-	
-	pub debug_draw: bool,
+	($name: ident[$check: expr] |$self_: ident, $obj: ident, $objects: ident, $state: ident| $e: expr) =>
+	{
+		impl ::engine::world::Behavior<::game_state::Object, ::game_state::GameState> for $name
+		{
+			fn check_object(&$self_, $obj: &::game_state::Object) -> bool
+			{
+				$check
+			}
 
-	pub is_game: bool,
-	pub player_id: usize,
-	pub start_time: f32,
-	pub stage: i32,
-	
-	pub can_want_move: bool,
-	pub want_move_left: bool,
-	pub want_move_right: bool,
-
-	pub is_player: bool,
-
-	pub is_branch: bool,
-	pub branch_start_x: f32,
-	pub branch_start_y: f32,
-	pub branch_dir_x: f32,
-	pub branch_dir_y: f32,
-	pub branch_start_time: f32,
-	pub branch_max_dur: f32,
-	pub branch_spawns: i32,
-	
-	pub affected_by_gravity: bool,
-	pub is_solid: bool,
-	pub size: f32,
-	
-	pub is_dollar: bool,
-	pub dollar_spawn_color: Color,
-	
-	pub is_boss: bool,
-	
-	pub sprite: Option<Rc<Bitmap>>,
-	pub color: Color,
+			fn handle_objects(&mut $self_, $objects: &mut ::engine::id_map::IdMap<::game_state::Object>, $state: &mut ::game_state::GameState)
+			{
+				$e
+			}
+		}
+	}
 }
 
-impl Object
+macro_rules! object
 {
-	pub fn new(id: UniqueId) -> Object
+	($name: ident
 	{
-		Object
+		$($member: ident : $type_ : ty = $init: expr),* $(,)*
+	}) =>
+	{
+		pub struct $name
 		{
-			id: id,
-			parent: 0,
-			
-			has_pos: false,
-			x: 0.0,
-			y: 0.0,
-			old_x: 0.0,
-			old_y: 0.0,
-			
-			has_vel: false,
-			vx: 0.0,
-			vy: 0.0,
-			ax: 0.0,
-			ay: 0.0,
-			
-			debug_draw: false,
-
-			is_game: false,
-			player_id: 0,
-			start_time: 0.0,
-			stage: 0,
-			
-			can_want_move: false,
-			want_move_left: false,
-			want_move_right: false,
-			
-			is_player: false,
-			
-			is_branch: false,
-			branch_start_x: 0.0,
-			branch_start_y: 0.0,
-			branch_dir_x: 0.0,
-			branch_dir_y: 0.0,
-			branch_start_time: 0.0,
-			branch_max_dur: 0.0,
-			branch_spawns: 0,
-			
-			affected_by_gravity: false,
-			is_solid: false,
-			size: 10.0,
-
-			is_dollar: false,
-			dollar_spawn_color: Color::from_rgba(0, 0, 0, 0),
-			
-			is_boss: false,
-			
-			sprite: None,
-			color: Color::from_rgba(0, 0, 0, 0),
+			id: UniqueId,
+			$(pub $member : $type_),*
 		}
+
+		impl $name
+		{
+			pub fn new(id: UniqueId) -> $name
+			{
+				$name
+				{
+					id: id,
+					$($member : $init),*
+				}
+			}
+		}
+	}
+}
+
+object!
+{
+	Object
+	{
+		parent: usize = 0,
+
+		has_pos: bool = false,
+		x: f32 = 0.0,
+		y: f32 = 0.0,
+		old_x: f32 = 0.0,
+		old_y: f32 = 0.0,
+
+		has_vel: bool = false,
+		vx: f32 = 0.0,
+		vy: f32 = 0.0,
+		ax: f32 = 0.0,
+		ay: f32 = 0.0,
+
+		debug_draw: bool = false,
+
+		is_game: bool = false,
+		player_id: usize = 0,
+		start_time: f32 = 0.0,
+		stage: i32 = 0,
+
+		can_want_move: bool = false,
+		want_move_left: bool = false,
+		want_move_right: bool = false,
+
+		is_player: bool = false,
+
+		is_branch: bool = false,
+		branch_start_x: f32 = 0.0,
+		branch_start_y: f32 = 0.0,
+		branch_dir_x: f32 = 0.0,
+		branch_dir_y: f32 = 0.0,
+		branch_start_time: f32 = 0.0,
+		branch_max_dur: f32 = 0.0,
+		branch_spawns: i32 = 0,
+
+		affected_by_gravity: bool = false,
+		is_solid: bool = false,
+		size: f32 = 10.0,
+
+		is_dollar: bool = false,
+		dollar_spawn_color: Color = Color::from_rgba(0, 0, 0, 0),
+
+		is_boss: bool = false,
+
+		sprite: Option<Rc<Bitmap>> = None,
+		color: Color = Color::from_rgba(0, 0, 0, 0),
 	}
 }
 
@@ -174,12 +164,12 @@ pub struct GameState
 	pub prim: PrimitivesAddon,
 	pub disp: Display,
 	pub ttf: TtfAddon,
-	
+
 	pub id_mint: IdMint,
-	
+
 	new_objects: Vec<Object>,
 	ids_to_remove: HashSet<usize>,
-	
+
 	pub key_down: Option<KeyCode>,
 	pub key_up: Option<KeyCode>,
 	pub quit: bool,
@@ -215,17 +205,17 @@ impl GameState
 			bitmap_manager: BitmapCache::new(),
 		}
 	}
-	
+
 	pub fn add_object(&mut self, obj: Object)
 	{
 		self.new_objects.push(obj);
 	}
-	
+
 	pub fn remove_object(&mut self, id: usize)
 	{
 		self.ids_to_remove.insert(id);
 	}
-	
+
 	pub fn new_id(&mut self) -> UniqueId
 	{
 		self.id_mint.new_id()
